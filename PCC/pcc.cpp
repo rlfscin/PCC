@@ -45,20 +45,44 @@ int main(int argc, char* argv[]) {
       abort ();
   }
 
-  ifstream in(argv[optind + 1], std::ios::in | std::ios::binary);
-  std::ostringstream contents;
-  contents << in.rdbuf();
-  in.close();
+  vector<int> v;
+  KMP kmp;
 
-  KMP kmp(argv[optind]);
+  if(patterns == NULL) {
+    // read textfile
+    ifstream in(argv[optind + 1], std::ios::in | std::ios::binary);
+    std::ostringstream contents;
+    contents << in.rdbuf();
+    in.close();
 
-  vector<int> v = kmp.search(contents.str());
+    kmp.renew(argv[optind]);
+    v = kmp.search(contents.str());
+    cout << v.size() << "\n";
+    cout << "FIM\n";
+  } else {
+    // read textfile
+    ifstream in(argv[optind], std::ios::in | std::ios::binary);
+    std::ostringstream contents;
+    contents << in.rdbuf();
+    in.close();
+
+    ifstream patternsFile(patterns);
+    string line;
+
+    while(std::getline(patternsFile, line)) {
+      kmp.renew(line);
+      v = kmp.search(contents.str());
+      cout << v.size() << "\n";
+    }
+    cout << "FIM\n";
+  }
+
 
   // for (int i =0; i < v.size(); i++) {
   //   cout << v[i] << endl;
   // }
 
-  cout << v.size() << "\n";
+  // cout << v.size() << "\n";
 
 
 	// printf ("error = %s, patterns = %s, Non-option = %s\n", error, patterns, argv[optind]);

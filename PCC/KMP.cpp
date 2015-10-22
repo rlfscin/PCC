@@ -18,6 +18,9 @@ public:
         KMPTable(w);
         this->w = w;
     }
+    KMP() {
+    	
+    }
     ~KMP(){
         delete table;
     }
