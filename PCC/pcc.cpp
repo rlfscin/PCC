@@ -2,7 +2,7 @@
 // -e, --edit erro: busca aproximada 
 // -p patternfile
 // http://www.gnu.org/software/libc/manual/html_node/Getopt.html
-// http://stackoverflow.com/questions/8774200/making-command-line-programs-with-arguments
+// http://insanecoding.blogspot.com.br/2011/11/how-to-read-in-file-in-c.html
 
 /*
 * OPCOES DE BUSCA
@@ -16,14 +16,12 @@
 
 // argv[optind] -> you can use this variable to determine where the remaining non-option arguments begin. The initial value of this variable is 1.
 
-// #include <ctype.h>
-// #include <stdlib.h>
-// #include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
 #include <fstream>
 #include <sstream>
+#include <getopt.h>
 #include "KMP.cpp"
 
 int main(int argc, char* argv[]) {
@@ -32,17 +30,37 @@ int main(int argc, char* argv[]) {
 	char *error = NULL;
 	char *patterns = NULL;
 
-	while ((c = getopt (argc, argv, "e:p:")) != -1)
+  while (1) {
+    static struct option long_options[] = {
+      {"pattern", required_argument, 0, 'p'},
+      {"edit", required_argument, 0, 'e'},
+      {"help", no_argument, 0, 'h'}
+    };
 
-  switch (c) { 
-    case 'e':
-      error = optarg;
+    int option_index = 0;
+
+    c = getopt_long (argc, argv, "p:e:h", long_options, &option_index);
+
+    if(c == -1)
       break;
-    case 'p':
-    	patterns = optarg;
-    	break;
-    default:
-      abort ();
+
+    switch (c) {
+      case 'e':
+        error = optarg;
+        break;
+
+      case 'p':
+        patterns = optarg;
+        break;
+
+      case 'h':
+        cout << "ajuda custa 5 reais\n";
+        return 0;
+        break;
+
+      default:
+        abort();
+    }
   }
 
   vector<int> v;
@@ -57,7 +75,15 @@ int main(int argc, char* argv[]) {
 
     kmp.renew(argv[optind]);
     v = kmp.search(contents.str());
-    cout << v.size() << "\n";
+
+    // cout << v.size() << "\n";
+
+    string con = contents.str();
+
+    for(int i = 0; i < v.size(); i++) {
+      cout << "<-- " << con.substr(v[i]-10, 20) << " -->\n";
+    }
+
     cout << "FIM\n";
   } else {
     // read textfile
@@ -65,27 +91,20 @@ int main(int argc, char* argv[]) {
     std::ostringstream contents;
     contents << in.rdbuf();
     in.close();
+    string contentsStr = contents.str();
 
+    // read patterns file
     ifstream patternsFile(patterns);
     string line;
 
     while(std::getline(patternsFile, line)) {
       kmp.renew(line);
-      v = kmp.search(contents.str());
+      v = kmp.search(contentsStr);
+
       cout << v.size() << "\n";
     }
     cout << "FIM\n";
   }
-
-
-  // for (int i =0; i < v.size(); i++) {
-  //   cout << v[i] << endl;
-  // }
-
-  // cout << v.size() << "\n";
-
-
-	// printf ("error = %s, patterns = %s, Non-option = %s\n", error, patterns, argv[optind]);
 
 	return 0;
 }
