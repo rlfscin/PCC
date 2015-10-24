@@ -19,7 +19,7 @@ public:
         this->w = w;
     }
     KMP() {
-    	
+
     }
     ~KMP(){
         delete table;
@@ -95,10 +95,6 @@ private:
                 //roll back
                 i = table[i];
             }
-        }
-        cout << "Tabela criada" << endl;;
-        for(int i = 0; i < w.length();i++){
-            cout << w[i] << " -- " << table[i] << endl;
         }
     }
 };
