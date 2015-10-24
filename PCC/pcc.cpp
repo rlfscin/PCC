@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
         break;
 
       case 'h':
-        cout << "ajuda custa 5 reais\n";
+        cout << "pmt [-e error] [-p patternsfile] [pattern] textfile\n";
         return 0;
         break;
 
