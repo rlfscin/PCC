@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
         break;
 
       case 'h':
-        cout << "pmt [-e error] [-p patternsfile] [pattern] textfile\n";
+        cout << "pmt [-e error] [-p patternsfile] [pattern] textfile [textfile...]" << endl;
         return 0;
         break;
 
