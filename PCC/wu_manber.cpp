@@ -28,9 +28,9 @@ vector<int> wu_manber(string t, string p, int k)
         old = r[0];
         r[0] |= mask[t[i]];
         r[0] <<= 1;
-        for(int j = 1; j+1 < k; j++){
+        for(int j = 1; j <= k; j++){
             int temp = r[j];
-            r[j] = (old & (r[j] | mask[t[i]])) << 1; // | is going to be similar to == with the mask
+            r[j] = (old & (r[j] | mask[t[i]])) << 1;
             old = temp;
         }
         if((r[k] & (1 << size)) == 0){ // Find a match
