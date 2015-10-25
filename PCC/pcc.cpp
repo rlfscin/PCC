@@ -17,6 +17,7 @@
 // argv[optind] -> you can use this variable to determine where the remaining non-option arguments begin. The initial value of this variable is 1.
 
 #include "KMP.cpp"
+#include "wu_manber.cpp"
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
@@ -31,6 +32,7 @@ int main(int argc, char* argv[]) {
 
 	char *error = NULL;
 	char *patterns = NULL;
+  int e = -1;
 
   while (1) {
     static struct option long_options[] = {
@@ -49,6 +51,7 @@ int main(int argc, char* argv[]) {
     switch (c) {
       case 'e':
         error = optarg;
+        e = atoi(error);
         break;
 
       case 'p':
@@ -64,9 +67,6 @@ int main(int argc, char* argv[]) {
         abort();
     }
   }
-
-  vector<int> v;
-  KMP kmp;
 
   vector<string> allArgs(argv, argv + argc);
   vector<string> theseAreThePatterns;
@@ -97,23 +97,46 @@ int main(int argc, char* argv[]) {
   }
 
 
+  vector<int> v;
+  KMP kmp;
   string contentsStr;
-  for (int i = 0; i < andTheseAreTheTextFiles.size(); i++) {
-    ifstream in(andTheseAreTheTextFiles[i], std::ios::in | std::ios::binary);
-    std::ostringstream contents;
-    contents << in.rdbuf();
-    in.close();
-    contentsStr = contents.str();
 
-    for (int j = 0; j < theseAreThePatterns.size(); j++) {
-      kmp.renew(theseAreThePatterns[j]);
-      v = kmp.search(contentsStr);
+  ifstream in;
+  std::ostringstream contents;
+  if(error == NULL){
+    // exact string matching (KMP)
 
-      printf("PADRAO '%s' PARA ARQUIVO '%s'\n", theseAreThePatterns[j].c_str(), andTheseAreTheTextFiles[i].c_str());
-      for(int k = 0; k < v.size(); k++) {
-        printf("%s\n", contentsStr.substr(v[k]-10, 20).c_str());
+    for (int i = 0; i < andTheseAreTheTextFiles.size(); i++) {
+      in.open(andTheseAreTheTextFiles[i], std::ios::in | std::ios::binary);
+      contents << in.rdbuf();
+      in.close();
+      contentsStr = contents.str();
+
+      for (int j = 0; j < theseAreThePatterns.size(); j++) {
+        kmp.renew(theseAreThePatterns[j]);
+        v = kmp.search(contentsStr);
+
+        printf("PADRAO '%s' PARA ARQUIVO '%s'\n", theseAreThePatterns[j].c_str(), andTheseAreTheTextFiles[i].c_str());
+        for(int k = 0; k < v.size(); k++) {
+          printf("%s\n", contentsStr.substr(v[k]-10, 20).c_str());
+        }
+        printf("---FIM---\n");
       }
-      printf("---FIM---\n");
+    }
+  } else {
+    for (int i = 0; i < andTheseAreTheTextFiles.size(); i++) {
+      in.open(andTheseAreTheTextFiles[i], std::ios::in | std::ios::binary);
+      contents << in.rdbuf();
+      in.close();
+      contentsStr = contents.str();
+
+      for (int j = 0; j < theseAreThePatterns.size(); j++) {
+        v = wu_manber(contentsStr, theseAreThePatterns[j], e);
+
+        for(int k = 0; k < v.size(); k++) {
+          printf("%s\n", contentsStr.substr(v[k], 10).c_str());
+        }
+      }
     }
   }
 
