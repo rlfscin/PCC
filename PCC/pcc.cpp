@@ -106,8 +106,11 @@ int main(int argc, char* argv[]) {
   if(error == NULL){
     // exact string matching (KMP)
 
+    // string line;
+    // int lineNumber;
     for (int i = 0; i < andTheseAreTheTextFiles.size(); i++) {
       in.open(andTheseAreTheTextFiles[i], std::ios::in | std::ios::binary);
+      contents.str("");
       contents << in.rdbuf();
       in.close();
       contentsStr = contents.str();
@@ -116,16 +119,36 @@ int main(int argc, char* argv[]) {
         kmp.renew(theseAreThePatterns[j]);
         v = kmp.search(contentsStr);
 
-        printf("PADRAO '%s' PARA ARQUIVO '%s'\n", theseAreThePatterns[j].c_str(), andTheseAreTheTextFiles[i].c_str());
         for(int k = 0; k < v.size(); k++) {
-          printf("%s\n", contentsStr.substr(v[k]-10, 20).c_str());
+          printf("%s\n", contentsStr.substr(v[k], 20).c_str());
         }
-        printf("---FIM---\n");
+        printf("--- END PATTERN %d FOR FILE %d---\n", j+1, i+1);
       }
+
+      // strategy 2: line by line
+      // in.open(andTheseAreTheTextFiles[i], std::ios::in | std::ios::binary);
+      // lineNumber = 1;
+
+      // for (int j = 0; j < theseAreThePatterns.size(); j++) {
+      //   kmp.renew(theseAreThePatterns[j]);
+
+      //   while(getline(in, line)) {
+      //     v = kmp.search(line);
+
+      //     for (int k = 0; k < v.size(); ++k) {
+      //       // printf("line %d at %d\n", lineNumber, v[k]);
+      //       printf("%s\n", line.c_str());
+      //     }
+
+      //     lineNumber++;
+      //   }
+      // }
+      // in.close();
     }
   } else {
     for (int i = 0; i < andTheseAreTheTextFiles.size(); i++) {
       in.open(andTheseAreTheTextFiles[i], std::ios::in | std::ios::binary);
+      contents.str("");
       contents << in.rdbuf();
       in.close();
       contentsStr = contents.str();
@@ -134,8 +157,9 @@ int main(int argc, char* argv[]) {
         v = wu_manber(contentsStr, theseAreThePatterns[j], e);
 
         for(int k = 0; k < v.size(); k++) {
-          printf("%s\n", contentsStr.substr(v[k], 10).c_str());
+          printf("%s\n", contentsStr.substr(v[k], 20).c_str());
         }
+        printf("--- END PATTERN %d FOR FILE %d---\n", j+1, i+1);
       }
     }
   }
