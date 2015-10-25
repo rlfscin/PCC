@@ -1,6 +1,7 @@
 #include "KMP.cpp"
 #include "wu_manber.cpp"
 #include <iostream>
+#include <stdlib.h>
 #include <fstream>
 #include <unistd.h>
 #include <fstream>
