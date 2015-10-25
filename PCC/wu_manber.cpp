@@ -1,11 +1,3 @@
-//
-//  wu_manber.cpp
-//  PCC
-//
-//  Created by Rubens Lopes de Farias Silva on 10/20/15.
-//  Copyright (c) 2015 Rubens Lopes de Farias Silva. All rights reserved.
-//
-
 #include <string>
 #include <vector>
 #include <limits.h>

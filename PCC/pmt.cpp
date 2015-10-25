@@ -1,21 +1,3 @@
-//pmt [options] pattern textfile [textfile...]
-// -e, --edit erro: busca aproximada 
-// -p patternfile
-// http://www.gnu.org/software/libc/manual/html_node/Getopt.html
-// http://insanecoding.blogspot.com.br/2011/11/how-to-read-in-file-in-c.html
-
-/*
-* OPCOES DE BUSCA
-* 1: pmt padrao arquivo.txt
-* 2: pmt -e 3 padrao arquivo.txt
-* 3: pmt -edit 3 padrao arquivo.txt
-* 4: pmt -p padrao.txt arquivo.txt
-* 5: pmt padrao arquivo.txt arquivo2.txt arquivo3.txt
-* 6: pmt -e 3 -p pedrao.txt arquivo.txt pedro*.txt
-*/
-
-// argv[optind] -> you can use this variable to determine where the remaining non-option arguments begin. The initial value of this variable is 1.
-
 #include "KMP.cpp"
 #include "wu_manber.cpp"
 #include <iostream>
