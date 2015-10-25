@@ -117,59 +117,5 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // if(patterns == NULL) {
-
-  //   /*
-  //   * ESTRATEGIA 1: avaliar linha por linha, imprimir ela se existir a ocorrencia
-  //   */
-  //   // std::string line;
-  //   // std::ifstream infile(argv[optind + 1], std::ios::in | std::ios::binary);
-  //   // kmp.renew(argv[optind]);
-
-  //   // while (getline(infile, line)) {
-  //   //     v = kmp.search(line);
-        
-  //   //     if(v.size() != 0) {
-  //   //       printf("%s\n", line.c_str());
-  //   //     }
-  //   // }
-
-  //   /*
-  //   * ESTRATEGIA 2: avaliar arquivo inteiro, imprimir parte do texto onde existe a ocorrencia
-  //   */
-  //   ifstream in(argv[optind + 1], std::ios::in | std::ios::binary);
-  //   std::ostringstream contents;
-  //   contents << in.rdbuf();
-  //   in.close();
-
-  //   kmp.renew(argv[optind]);
-  //   v = kmp.search(contents.str());
-
-  //   string con = contents.str();
-
-  //   for(int i = 0; i < v.size(); i++) {
-  //     printf("%s", con.substr(v[i]-100, 220).c_str());
-  //   }
-  // } else {
-  //   ifstream in(argv[optind], std::ios::in | std::ios::binary);
-  //   std::ostringstream contents;
-  //   contents << in.rdbuf();
-  //   in.close();
-  //   string contentsStr = contents.str();
-
-  //   // read patterns file
-  //   ifstream patternsFile(patterns);
-  //   string line;
-
-  //   while(std::getline(patternsFile, line)) {
-  //     kmp.renew(line);
-  //     v = kmp.search(contentsStr);
-
-  //     for(int i = 0; i < v.size(); i++) {
-  //       printf("%s", contentsStr.substr(v[i]-100, 220).c_str());
-  //     }
-  //   }
-  // }
-
 	return 0;
 }
