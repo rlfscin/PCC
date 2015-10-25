@@ -24,6 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0C16E18B1BDCB2C000319426 /* wu_manber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wu_manber.cpp; sourceTree = "<group>"; };
 		0C5895FE1BD5FB080047EE9F /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
 		0C8A220C1BD5F1DA00FC00D7 /* PCC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PCC; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C8A220F1BD5F1DA00FC00D7 /* KMP.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KMP.cpp; sourceTree = "<group>"; };
@@ -61,6 +62,7 @@
 			children = (
 				0C5895FE1BD5FB080047EE9F /* test.cpp */,
 				0C8A220F1BD5F1DA00FC00D7 /* KMP.cpp */,
+				0C16E18B1BDCB2C000319426 /* wu_manber.cpp */,
 			);
 			path = PCC;
 			sourceTree = "<group>";
@@ -206,6 +208,7 @@
 		0C8A22141BD5F1DA00FC00D7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -213,6 +216,7 @@
 		0C8A22151BD5F1DA00FC00D7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

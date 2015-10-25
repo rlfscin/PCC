@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include "KMP.cpp"
+#include "wu_manber.cpp"
 
 using namespace std;
 int main(){
@@ -18,5 +19,12 @@ int main(){
     for (int i =0; i < v.size(); i++) {
         cout << v[i] << endl;
     }
+    cout << "Fim" << endl;
+    v = wu_manber("Rubens Lopes de Rubens Silva Rubens", "Rubbss", 1);
+    for (int i =0; i < v.size(); i++) {
+        cout << v[i] << endl;
+    }
     cout << "Fim";
+
+    
 }
