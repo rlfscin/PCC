@@ -7,7 +7,9 @@ using namespace std;
 class KMP{
 public:
     KMP(string w){
+    	init = false;
         KMPTable(w);
+        init = true;
         this->w = w;
     }
     KMP() {
@@ -19,7 +21,9 @@ public:
     
     //To avoid delete and recreate
     void renew(string w){
-        delete table;
+        if(init) {
+        	delete table;
+        }
         KMPTable(w);
         this->w = w;
     }
@@ -63,6 +67,7 @@ private:
     
     int *table;
     string w;
+    bool init;
     
     void KMPTable(string w){
         int pos = 2;
