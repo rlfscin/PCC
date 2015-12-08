@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C5895FF1BD5FB080047EE9F /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C5895FE1BD5FB080047EE9F /* test.cpp */; };
-		0C8A22101BD5F1DA00FC00D7 /* KMP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C8A220F1BD5F1DA00FC00D7 /* KMP.cpp */; };
+		0C0B87371C15CAC200640CE8 /* lz77.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B87351C15CAC200640CE8 /* lz77.cpp */; };
+		0CD89DA71C15CB5C00A09BCC /* huffman.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CD89DA61C15CB5C00A09BCC /* huffman.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,10 +24,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0C16E18B1BDCB2C000319426 /* wu_manber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wu_manber.cpp; sourceTree = "<group>"; };
-		0C5895FE1BD5FB080047EE9F /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
+		0C0B87341C15CAC200640CE8 /* huff.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = huff.py; sourceTree = "<group>"; };
+		0C0B87351C15CAC200640CE8 /* lz77.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lz77.cpp; sourceTree = "<group>"; };
+		0C0B87361C15CAC200640CE8 /* lz77.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = lz77.py; sourceTree = "<group>"; };
 		0C8A220C1BD5F1DA00FC00D7 /* PCC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PCC; sourceTree = BUILT_PRODUCTS_DIR; };
-		0C8A220F1BD5F1DA00FC00D7 /* KMP.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KMP.cpp; sourceTree = "<group>"; };
+		0CD89DA61C15CB5C00A09BCC /* huffman.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = huffman.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,10 +42,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C0B87331C15CAC200640CE8 /* PCC2 */ = {
+			isa = PBXGroup;
+			children = (
+				0C0B87341C15CAC200640CE8 /* huff.py */,
+				0C0B87351C15CAC200640CE8 /* lz77.cpp */,
+				0CD89DA61C15CB5C00A09BCC /* huffman.cpp */,
+				0C0B87361C15CAC200640CE8 /* lz77.py */,
+			);
+			path = PCC2;
+			sourceTree = "<group>";
+		};
 		0C8A22031BD5F1DA00FC00D7 = {
 			isa = PBXGroup;
 			children = (
-				0C8A220E1BD5F1DA00FC00D7 /* PCC */,
+				0C0B87331C15CAC200640CE8 /* PCC2 */,
 				0C8A220D1BD5F1DA00FC00D7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,16 +67,6 @@
 				0C8A220C1BD5F1DA00FC00D7 /* PCC */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		0C8A220E1BD5F1DA00FC00D7 /* PCC */ = {
-			isa = PBXGroup;
-			children = (
-				0C5895FE1BD5FB080047EE9F /* test.cpp */,
-				0C8A220F1BD5F1DA00FC00D7 /* KMP.cpp */,
-				0C16E18B1BDCB2C000319426 /* wu_manber.cpp */,
-			);
-			path = PCC;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -123,8 +125,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C8A22101BD5F1DA00FC00D7 /* KMP.cpp in Sources */,
-				0C5895FF1BD5FB080047EE9F /* test.cpp in Sources */,
+				0CD89DA71C15CB5C00A09BCC /* huffman.cpp in Sources */,
+				0C0B87371C15CAC200640CE8 /* lz77.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
