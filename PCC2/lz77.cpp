@@ -152,7 +152,7 @@ public:
 		return txt.substr(ls);
 	}
 };
-
+/*
 int main() {
 	vector<char> alphabet;
 	alphabet.push_back('a');
@@ -178,3 +178,4 @@ int main() {
 
 	return 0;
 }
+*/
