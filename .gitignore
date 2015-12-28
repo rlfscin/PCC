@@ -1,2 +1,4 @@
 *.out
 *.xcodeproj
+*.txt
+*.DS_Store
