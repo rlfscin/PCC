@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 #include <iterator>
+#include <string>
+
 using namespace std;
 
 class LZ78 {
@@ -109,9 +111,9 @@ public:
 
 		for (int j = s.length()-1; j > -1; j--)
 		{
-			pos = std::find(alphabet.begin(), alphabet.end(), s[j]) - alphabet.begin();
-			n += pos * rPow;
-			rPow *= r;
+			pos = find(alphabet.begin(), alphabet.end(), s[j]) - alphabet.begin();
+			n = n + (pos * rPow);
+			rPow = rPow * r;
 		}
 		return n;
 	}
@@ -127,11 +129,11 @@ public:
 
 		while (j == 0 || code[j] != E[0])
 		{
-			y = code.substr(j, j + k);
+			y = code.substr(j, k);
 			j += k;
-			k = strtoint(y.substr(1, y.length()), E) + 2;
+			k = strtoint(y, E) + 2;
 		}
-		ret.first = strtoint(y.substr(1, y.length()), E);
+		ret.first = strtoint(y.substr(1), E);
 		ret.second = j + 1;
 		return ret;
 	}
@@ -141,19 +143,20 @@ public:
 		string txt = "";
 		vector<pair<int, int> > dictionary;
 		dictionary.push_back(pair<int, int>(0, 0));
-		int dicIndex = 1;		
+		int i = 0;
+		int n = code.length();
 
-		pair<int, int> pL, kL;
+		pair<int, int> pL, kl;
 
-		for (int i = 0; i < code.length();)
-		{
-			pL = cw_decode(code.substr(i, code.length()), E);
+		while(i < n) {
+			pL = cw_decode(code.substr(i), E);
 			i += pL.second;
-			kL = cw_decode(code.substr(i, code.length()), E);
-			i += kL.second;
-			txt += (txt.substr(dictionary[pL.first].first, dictionary[pL.first].second) + A[kL.first]);
+			kl = cw_decode(code.substr(i), E);
+			i += kl.second;
+			txt = txt + (txt.substr(dictionary[pL.first].first, dictionary[pL.first].second - dictionary[pL.first].first) + A[kl.first]);
 			dictionary.push_back(pair<int,int>(txt.length() - ((dictionary[pL.first].second - dictionary[pL.first].first) + 1), txt.length()));
 		}
+
 		return txt.substr(0, txt.length() - 1);
 	}
 
@@ -162,33 +165,26 @@ public:
 int main() {
 	LZ78 lz78;
 
-	/*vector<char> bla, bla2;
-	bla.push_back('0');
-	bla.push_back('1');
-	bla2.push_back('1');
-	bla2.push_back('6');
-
-	string code2 = lz78.inttostr(16, bla);
-	printf("teste: %s = %d\n", code2.c_str(), lz78.strtoint(code2, bla));
-	string rcode = lz78.rev_encode(code2, bla);
-	printf("rcode = %s\n", rcode.c_str());
-	pair<int, int> pL = lz78.cw_decode(rcode, bla);
-	printf("p = %d, l = %d\n", pL.first, pL.second);*/
-
-
 	string txt = "aabcbcbcbacbabcbabccbabb";
 	vector<char> alphabet, eAlphabet;
 	alphabet.push_back('a');
 	alphabet.push_back('b');
 	alphabet.push_back('c');
+	alphabet.push_back('$');
 	eAlphabet.push_back('0');
 	eAlphabet.push_back('1');
 	
 	string code = lz78.encode(txt, alphabet, eAlphabet);
 	printf("code= %s\n", code.c_str());
 
-	//string decode = lz78.decode(code, alphabet, eAlphabet);
-	//printf("txt= %s\n", decode.c_str());
+	string decode = lz78.decode(code, alphabet, eAlphabet);
+	printf("text= %s\n", decode.c_str());
+
+	if(decode == txt) {
+		cout << "ta igual porra" << endl;
+	} else {
+		cout << "reprovasse" << endl;
+	}
 
 	return 0;
 }
