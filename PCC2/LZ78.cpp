@@ -1,7 +1,6 @@
 // LZ78Algoritmo.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
 #include <iostream>
 #include <map>
 #include <vector>
@@ -12,25 +11,27 @@ class LZ78 {
 public:
 	LZ78(){}
 
-	bool searchValue(map<int, string> dic, string value)
-	{
-		map<int, string>::iterator it;
-		for (it = dic.begin(); it != dic.end(); ++it)
-		{			
-			if (it->second == value)
-			{
-				return true;
-			}
-			else
-				return false;
-		}
-		return false;
-	}
+	// bool searchValue(map<int, string> dic, string value)
+	// {
+	// 	map<int, string>::iterator it;
+	// 	for (it = dic.begin(); it != dic.end(); ++it)
+	// 	{			
+	// 		if (it->second == value)
+	// 		{
+	// 			return true;
+	// 		}
+	// 		else
+	// 			return false;
+	// 	}
+	// 	return false;
+	// }
 
 	string inttostr(int n, vector<char> alphabet)
 	{
-		if (n == 0)
-			return alphabet[0] + "";
+		if (n == 0) {
+			string s(1, alphabet[0]);
+			return s;
+		}
 
 		int r = alphabet.size();
 		string ret = "";
@@ -64,7 +65,7 @@ public:
 	string encode(string text, vector<char> A, vector<char> E)
 	{
 		string txt = text + "$";
-		map<int, string> dictionary;
+		map<string, int> dictionary;
 		int dicIndex = 1;
 		int codeWordForPrefix;
 		string prefix = "";
@@ -72,10 +73,10 @@ public:
 
 		string code = "";
 
-		dictionary.insert(pair<int, string>(0, ""));
+		dictionary.insert(pair<string, int>("", 0));
 		for (int i = 0; i < txt.length(); i++)
 		{
-			if (searchValue(dictionary, txt[i]+""))
+			if(dictionary.find(prefix + txt[i]) != dictionary.end())
 			{
 				prefix += txt[i];
 			}
@@ -86,11 +87,11 @@ public:
 					codeWordForPrefix = 0;
 				}
 				else
-					codeWordForPrefix = dicIndex;
+					codeWordForPrefix = dictionary.find(prefix)->second;
 
 				code += cw_encode(codeWordForPrefix, txt[i], A, E);
 				
-				dictionary.insert(pair<int, string>(dicIndex, txt[i]+""));
+				dictionary.insert(pair<string, int>(prefix + txt[i], dicIndex));
 				dicIndex++;
 				prefix = "";
 			}
@@ -138,7 +139,7 @@ public:
 	string decode(string code, vector<char> A, vector<char> E)
 	{
 		string txt = "";
-		vector<pair<int, int>> dictionary;
+		vector<pair<int, int> > dictionary;
 		dictionary.push_back(pair<int, int>(0, 0));
 		int dicIndex = 1;		
 
