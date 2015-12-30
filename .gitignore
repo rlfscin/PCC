@@ -2,3 +2,5 @@
 *.xcodeproj
 *.txt
 *.DS_Store
+*.pt
+*.50MB
