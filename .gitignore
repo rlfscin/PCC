@@ -4,3 +4,10 @@
 *.DS_Store
 *.pt
 *.50MB
+*.pt
+*.bin
+*.idx
+*dSYM
+ipmt
+lz78
+sa
