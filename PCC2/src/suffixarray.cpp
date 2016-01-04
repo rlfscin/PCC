@@ -55,19 +55,19 @@ public:
 	}
 };
 
-int main() {
-	suffixarray teste;
+// int main() {
+// 	suffixarray teste;
 
-	ifstream in;
-	std::ostringstream contents;
-	string contentsStr;
-	in.open("dna.50MB");
-	contents.str("");
-	contents << in.rdbuf();
-	in.close();
-	contentsStr = contents.str();
+// 	ifstream in;
+// 	std::ostringstream contents;
+// 	string contentsStr;
+// 	in.open("dna.50MB");
+// 	contents.str("");
+// 	contents << in.rdbuf();
+// 	in.close();
+// 	contentsStr = contents.str();
 
-	vector<int> a = teste.index(contentsStr);
+// 	vector<int> a = teste.index(contentsStr);
 
 	// ofstream outfile ("indices.idx", ios::binary);
 	// outfile.write((char *) &a, sizeof(a));
@@ -91,5 +91,5 @@ int main() {
 	// 	cout << a[i] << endl;
 	// }
 
-	return 0;
-}
+	// return 0;
+// }
