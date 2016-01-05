@@ -42,14 +42,15 @@ public:
 			while(r - l > 1) {
 				h = floor((l+r)/2);
 				// T[Sh..] <=m P
-				if (T.substr(S[h]).substr(P.length())) {
-					r = h;
-				} else {
+				if (T.substr(S[h]).substr(P.length()) <= P) {
 					l = h;
+				} else {
+					r = h;
 				}
 			}
-			return r;
+			return l;
 		}
 	}
 
+	
 }
