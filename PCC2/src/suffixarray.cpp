@@ -31,7 +31,7 @@ public:
 			P[i] = text[i];
 		}
 
-		// int count = 1;
+		int count = 1;
 		int lg2 = ceil(log2(n));
 		vector<x> L(n);
 
@@ -39,16 +39,16 @@ public:
 		for(int k = 1; k < lg2; k++) {
 			for (int i = 0; i < n; i++) {
 				L[i].a = P[i];
-				L[i].b = i + 1 < n ? P[i + 1] : -1;
+				L[i].b = i + count < n ? P[i + count] : -1;
 				L[i].index = i;
 			}
 
 			sort(L.begin(), L.end(), this->cmp);
 
 			for (int i = 0; i < n; i++) {
-				P[L[i].index] = i > 0 && L[i].a == L[i-1].b && L[i].b == L[i-1].b ? P[L[i-1].index] : i;
+				P[L[i].index] = i > 0 && L[i].a == L[i-1].a && L[i].b == L[i-1].b ? P[L[i-1].index] : i;
 			}
-			// count *= 2;
+			count *= 2;
 		}
 
 		return P;
@@ -56,40 +56,43 @@ public:
 };
 
 // int main() {
-// 	suffixarray teste;
+// 	suffixarray sa;
 
-// 	ifstream in;
-// 	std::ostringstream contents;
-// 	string contentsStr;
-// 	in.open("dna.50MB");
-// 	contents.str("");
-// 	contents << in.rdbuf();
-// 	in.close();
-// 	contentsStr = contents.str();
+// 	// ifstream in;
+// 	// std::ostringstream contents;
+// 	// string contentsStr;
+// 	// in.open("dna.50MB");
+// 	// contents.str("");
+// 	// contents << in.rdbuf();
+// 	// in.close();
+// 	// contentsStr = contents.str();
 
-// 	vector<int> a = teste.index(contentsStr);
+// 	string T = "abbabab";
+// 	vector<int> S = sa.index(T);
 
-	// ofstream outfile ("indices.idx", ios::binary);
-	// outfile.write((char *) &a, sizeof(a));
-	// outfile.close();
+// 	// ofstream outfile ("indices.idx", ios::binary);
+// 	// outfile.write((char *) &a, sizeof(a));
+// 	// outfile.close();
 
-	// ofstream FILE("indices.idx", ios::out | ofstream::binary);
-	// copy(a.begin(), a.end(), ostreambuf_iterator<char>(FILE));
+// 	// ofstream FILE("indices.idx", ios::out | ofstream::binary);
+// 	// copy(a.begin(), a.end(), ostreambuf_iterator<char>(FILE));
 
-	// vector<int> newVector;
-	// ifstream INFILE("indices.idx", ios::out | ofstream::binary);
-	// istreambuf_iterator<char> iter(INFILE);
-	// copy(iter.begin(), iter.end(), back_inserter(newVector));
+// 	// vector<int> newVector;
+// 	// ifstream INFILE("indices.idx", ios::out | ofstream::binary);
+// 	// istreambuf_iterator<char> iter(INFILE);
+// 	// copy(iter.begin(), iter.end(), back_inserter(newVector));
 
-	// vector<int> toRestore;
-	// ifstream infile("indices.idx", ios::binary);
-	// infile.read((char *) &toRestore, sizeof(toRestore));
-	// infile.close();
+// 	// vector<int> toRestore;
+// 	// ifstream infile("indices.idx", ios::binary);
+// 	// infile.read((char *) &toRestore, sizeof(toRestore));
+// 	// infile.close();
 
-	// for (int i = 0; i < a.size(); i++)
-	// {
-	// 	cout << a[i] << endl;
-	// }
+// 	for (int i = 0; i < S.size(); i++)
+// 	{
+// 		// cout << a[i] << endl;
+// 		printf("%d ", S[i]);
+// 	}
+// 	printf("\n");
 
-	// return 0;
+// 	return 0;
 // }
