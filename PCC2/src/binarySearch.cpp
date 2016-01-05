@@ -19,12 +19,11 @@ public:
 	
 	int findSucessor(string T, string P, vector<int> S) {
 		// P <=m T[S1..]
-		if (P <= getSuffix(T.substr(S[0]), P.length())) {
-			return 0;
-			
+		if (strcmp(P.c_str(), getSuffix(T.substr(S[0]), P.length()).c_str()) == -1) {
+			return 0;			
 		}
 		// P >=m T[Sn..]
-		else if (P >= getSuffix(T.substr(S[S.size() - 1]), P.length())) {
+		else if (strcmp(P.c_str(), getSuffix(T.substr(S[S.size() - 1]), P.length()).c_str()) == 1) {
 			return S.size();
 		}
 		else {
@@ -33,7 +32,7 @@ public:
 			while (r - l > 1) {
 				h = floor((l + r) / 2);
 				// P <=m T[Sh..]
-				if (P <= getSuffix(T.substr(S[h]), P.length())) {
+				if (strcmp(P.c_str(), getSuffix(T.substr(S[h]), P.length()).c_str()) == -1) {
 					r = h;
 				}
 				else {
@@ -46,12 +45,11 @@ public:
 
 	int findPredecessor(string T, string P, vector<int> S) {
 		// T[Sn..] <=m P
-		if (getSuffix(T.substr(S[S.size() - 1]), P.length()) <= P) {
-			return S.size();
-			
+		if (strcmp(getSuffix(T.substr(S[S.size() - 1]), P.length()).c_str(), P.c_str()) == -1) {
+			return S.size();			
 		}
-		// T[S1..] <=m P
-		else if (getSuffix(T.substr(S[0]), P.length()) >= P) {
+		// T[S1..] >=m P
+		else if (strcmp(getSuffix(T.substr(S[0]), P.length()).c_str(), P.c_str()) == 1) {
 			return 0;
 		}
 		else {
@@ -60,7 +58,7 @@ public:
 			while (r - l > 1) {
 				h = floor((l + r) / 2);
 				// T[Sh..] <=m P
-				if (getSuffix(T.substr(S[h]), P.length()) <= P) {
+				if (strcmp(getSuffix(T.substr(S[h]), P.length()).c_str(), P.c_str()) == -1) {
 					l = h;
 				}
 				else {
@@ -86,9 +84,3 @@ public:
 		return matches;
 	}
 };
-
-int main() {
-	binarySearch bs;
-
-
-}
