@@ -14,24 +14,24 @@ public:
 
 	}
 
-	vector<int> encode(string text) {
+	vector<short> encode(string text) {
 
-		unordered_map<string, int> dictionary;
+		unordered_map<string, short> dictionary;
 
 		string a;
-		for(int i = 0; i < 256; i++) {
+		for(short i = 0; i < 256; i++) {
 			a = (char) i;
-			dictionary.insert(pair<string, int>(a, i));
+			dictionary.insert(pair<string, short>(a, i));
 		}
 
 		string prefix = "";
 		prefix += text[0];
 
-		int codeword = 256;
+		short codeword = 256;
 		int n = text.length();
 		char c;
 
-		vector<int> code;
+		vector<short> code;
 
 		for(int i = 1; i < n; i++) {
 			c = text[i];
@@ -48,14 +48,14 @@ public:
 					prefix = text[i];
 
 					string a;
-					for(int i = 0; i < 256; i++) {
+					for(short i = 0; i < 256; i++) {
 						a = (char) i;
-						dictionary.insert(pair<string, int>(a, i));
+						dictionary.insert(pair<string, short>(a, i));
 					}
 
 					// cout << "clear" << endl;
 				} else {
-					dictionary.insert(pair<string, int>(prefix + c, codeword));
+					dictionary.insert(pair<string, short>(prefix + c, codeword));
 					codeword++;
 					prefix = c;
 				}
@@ -63,7 +63,8 @@ public:
 			}
 		}
 
-		code.push_back(this->codeForWord(prefix, dictionary));
+		// code.push_back(this->codeForWord(prefix, dictionary));
+		code.push_back(dictionary.find(prefix)->second);
 
 		cout << dictionary.size() << endl;
 
@@ -80,26 +81,26 @@ public:
 		}
 	}
 
-	string decode(vector<int> code) {
-		unordered_map<int, string> dictionary;
-		unordered_map<int, string>::const_iterator it;
+	string decode(vector<short> code) {
+		unordered_map<short, string> dictionary;
+		unordered_map<short, string>::const_iterator it;
 
 		string a;
-		for(int i = 0; i < 256; i++) {
+		for(short i = 0; i < 256; i++) {
 			a = (char) i;
-			dictionary.insert(pair<int, string>(i, a));
+			dictionary.insert(pair<short, string>(i, a));
 		}
 
-		int previousCodeWord = code[0];
+		short previousCodeWord = code[0];
 		string text = "";
 		text += (char) previousCodeWord;
 
 		char c = code[0];
-		int codeword = 256;
+		short codeword = 256;
 
 		int n = code.size();
 
-		int curretCW;
+		short curretCW;
 		string s;
 		string aux;
 		string x;
@@ -137,14 +138,14 @@ public:
 				previousCodeWord = code[i];
 				codeword = 256;
 
-				for(int i = 0; i < 256; i++) {
+				for(short i = 0; i < 256; i++) {
 					a = (char) i;
 					dictionary.insert(pair<int, string>(i, a));
 				}
 
 				// cout << "clear" << endl;
 			} else {
-				dictionary.insert(pair<int, string>(codeword, aux));
+				dictionary.insert(pair<short, string>(codeword, aux));
 				previousCodeWord = curretCW;
 				codeword++;
 			}
@@ -169,16 +170,9 @@ public:
 	// }
 };
 
-typedef unsigned char BYTE;
 
 int main() {
-	// string entrada = "";
-	// string x = "fhadosdalsdhajskdaskjda974378924ndadnabkdabdabiuda asd8293 ";
-
-	// for (int i = 0; i < 100; ++i)
-	// {
-	// 	entrada += x;
-	// }
+	LZW lzw;
 
 	ifstream in;
 	std::ostringstream contents;
@@ -189,55 +183,41 @@ int main() {
 	in.close();
 	contentsStr = contents.str();
 
-	LZW lzw;
-	vector<int> a = lzw.encode(contentsStr);
-	// ate a linha acima, aparentemente esta funcionando.
-	// o texto esta sendo comprimido para o vecotr<int>
+	vector<short> a = lzw.encode(contentsStr);
 
-	// essa escrita pode estar errada. nao tenho certeza
-	ofstream outfile ("magica.pt", ios::out | ios::binary);
+	ofstream outfile ("../files/magica.pt", ios::out | ios::binary);
 	for (int i = 0; i < a.size(); ++i)
 	{
-		outfile.write((const char*)&a[i], sizeof(int));
+		outfile.write((const char*)&a[i], sizeof(short));
 	}
 	outfile.close();
 
 
-	// streampos fileSize;
- //    ifstream file("magica.pt", std::ios::binary);
+	streampos fileSize;
+	ifstream file("../files/magica.pt", ios::in | ios::binary);
 
- //    // get its size:
- //    file.seekg(0, ios::end);
- //    fileSize = file.tellg();
- //    file.seekg(0, ios::beg);
+	// get its size:
+	file.seekg(0, ios::end);
+	fileSize = file.tellg();
+	file.seekg(0, ios::beg);
 
- //    // read the data:
- //    std::vector<BYTE> fileData(fileSize);
- //    file.read((char*) &fileData[0], fileSize);
+	int tamanho = fileSize/sizeof(short);
 
-	vector<int> b(a.size());
-	ifstream file("magica.pt", ios::in | ios::binary);
-	for (int i = 0; i < a.size(); i++)
+	vector<short> b(tamanho);
+	for (int i = 0; i < tamanho; i++)
 	{
-		file.read((char *) &b[i], sizeof(int));
+		file.read((char *) &b[i], sizeof(short));
 	}
 	file.close();
 
-    // vector<int> teste;
-    // for (int i = 0; i < fileData.size(); ++i)
-    // {
-    // 	teste[i] = fileData[i];
-    // }
-
 	string c = lzw.decode(b);
-	cout << c << endl;
-	// if(c == contentsStr) {
-	// 	cout << "boa" << endl;
-	// } else {
-	// 	cout << "reprovasse" << endl;
-	// }
 
-	// cout << b << endl;
+	ofstream out ("../files/dna.50MB", ios::out | ios::binary);
+	for (int i = 0; i < c.length(); i++)
+	{
+		out.write((char*) &c[i], sizeof(char));
+	}
+	out.close();
 
 	return 0;
 }
