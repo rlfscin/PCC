@@ -11,6 +11,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <bitset>
+#include "lz78-Aux.cpp"
 
 using namespace std;
 
@@ -173,7 +174,7 @@ int main() {
 	ifstream in;
 	std::ostringstream contents;
 	string contentsStr;
-	in.open("meComprima2.txt");
+	in.open("proteins.10MB");
 	contents.str("");
 	contents << in.rdbuf();
 	in.close();
@@ -193,20 +194,23 @@ int main() {
 	string code = lz78.encode(contentsStr, alphabet, eAlphabet);
 	printf("Comprimiu\n");
 
+	//--------------------------------------------------------------------------
+	saveInFile("Rubens.inf",code);
+
 	// write in a binary file
-	ofstream outfile ("compressed2.bin", std::ios::binary);
-	unsigned short len = code.length();
-	unsigned short bytes[4];
-	bytes[0] = (len) & 0xFF;
-	bytes[1] = (len >> 8) & 0xFF;
-	outfile.write((char*)bytes, 2);
-	outfile.write(code.c_str(), 8*len);
+	// ofstream outfile ("compressed2.bin", std::ios::binary);
+	// unsigned short len = code.length();
+	// unsigned short bytes[4];
+	// bytes[0] = (len) & 0xFF;
+	// bytes[1] = (len >> 8) & 0xFF;
+	// outfile.write((char*)bytes, 2);
+	// outfile.write(code.c_str(), 8*len);
 
 	// unsigned long x = code.length();
 	// bitset<code.length()> binario (code);
 	// ofstream outfile ("compressed2.bin", std::ios::binary);
 	// unsigned long n = binario.to_ulong() ;
- //    outfile.write( reinterpret_cast<const char*>(&n), sizeof(n) ) ;
+    // outfile.write( reinterpret_cast<const char*>(&n), sizeof(n) ) ;
 	
 	// ofstream outfile ("compressed2.bin", std::ios::binary);
 	// outfile.write((char*) code.c_str(), code.size());
@@ -215,23 +219,42 @@ int main() {
 	
 
 	// read binary file
-	unsigned short val;
-	unsigned char bytess[2];
-	ifstream file ("compressed2.bin", std::ifstream::binary);
-	file.read((char*) bytess, 2);
-	val = bytess[0] | (bytess[1] << 8);
-	char* buffer = new char[val];
-	file.read(buffer, val);
-	string str(buffer, val);
-	delete[] buffer;
-	in.open("compressed2.bin", std::ios::binary);
-	contents.str("");
-	contents << in.rdbuf();
-	in.close();
-	contentsStr = contents.str();
+	//unsigned short val;
+	//unsigned char bytess[2];
+	//ifstream file ("compressed2.bin", std::ifstream::binary);
+	//file.read((char*) bytess, 2);
+	//val = bytess[0] | (bytess[1] << 8);
+	//char* buffer = new char[val];
+	//file.read(buffer, val);
+	//string str(buffer, val);
+	//delete[] buffer;
+	//in.open("compressed2.bin", std::ios::binary);
+	//contents.str("");
+	//contents << in.rdbuf();
+	//in.close();
+	//contentsStr = contents.str();
 
 	printf("Descomprimindo\n");
-	// string text = lz78.decode(contentsStr, alphabet, eAlphabet);
+
+	vector<char> fromRubens = readFromFile("Rubens.inf");
+	string content(fromRubens.begin(), fromRubens.end());
+
+
+	string text = lz78.decode(content, alphabet, eAlphabet);
+
+	ofstream file2;
+	file2.open("saida.txt");
+	file2 << text;
+	file2.close();
+
+	if(text == contentsStr){
+		printf("YES\n");
+	}
+	else{
+		printf("NO\n");
+	}
+
+
 
 	if(code.length() > contentsStr.length()) {
 		cout << "sim" << endl;
