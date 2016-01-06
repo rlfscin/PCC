@@ -4,13 +4,17 @@
 *.DS_Store
 *.pt
 *.50MB
+*.100MB
+*.1024MB
 *.pt
 *.bin
 *.idx
 *dSYM
+*.py
 ipmt
 lz78
 sa
+PCC2/src/lzw
 !PCC2/bin/ipmt
 !PCC2/files/arquivodeindice.idx
 !PCC2/README.txt

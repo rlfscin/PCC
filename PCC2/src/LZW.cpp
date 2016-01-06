@@ -42,7 +42,7 @@ public:
 				// code.push_back(this->codeForWord(prefix, dictionary));
 				code.push_back(dictionary.find(prefix)->second);
 
-				if(dictionary.size() > 7934) {
+				if(dictionary.size() > 65520) {
 					dictionary.clear();
 					codeword = 256;
 					prefix = text[i];
@@ -133,7 +133,7 @@ public:
 			// aux = this->wordForCode(previousCodeWord, dictionary);
 			// aux += c;
 
-			if(dictionary.size() > 7934) {
+			if(dictionary.size() > 65520) {
 				dictionary.clear();
 				previousCodeWord = code[i];
 				codeword = 256;
@@ -171,53 +171,53 @@ public:
 };
 
 
-int main() {
-	LZW lzw;
+// int main() {
+// 	LZW lzw;
 
-	ifstream in;
-	std::ostringstream contents;
-	string contentsStr;
-	in.open("../../dna.50MB", std::ios::in | std::ios::binary);
-	contents.str("");
-	contents << in.rdbuf();
-	in.close();
-	contentsStr = contents.str();
+// 	ifstream in;
+// 	std::ostringstream contents;
+// 	string contentsStr;
+// 	in.open("../../english.100MB", std::ios::in | std::ios::binary);
+// 	contents.str("");
+// 	contents << in.rdbuf();
+// 	in.close();
+// 	contentsStr = contents.str();
 
-	vector<short> a = lzw.encode(contentsStr);
+// 	vector<short> a = lzw.encode(contentsStr);
 
-	ofstream outfile ("../files/magica.pt", ios::out | ios::binary);
-	for (int i = 0; i < a.size(); ++i)
-	{
-		outfile.write((const char*)&a[i], sizeof(short));
-	}
-	outfile.close();
+// 	ofstream outfile ("../files/magica.pt", ios::out | ios::binary);
+// 	for (int i = 0; i < a.size(); ++i)
+// 	{
+// 		outfile.write((const char*)&a[i], sizeof(short));
+// 	}
+// 	outfile.close();
 
 
-	streampos fileSize;
-	ifstream file("../files/magica.pt", ios::in | ios::binary);
+// 	streampos fileSize;
+// 	ifstream file("../files/magica.pt", ios::in | ios::binary);
 
-	// get its size:
-	file.seekg(0, ios::end);
-	fileSize = file.tellg();
-	file.seekg(0, ios::beg);
+// 	// get its size:
+// 	file.seekg(0, ios::end);
+// 	fileSize = file.tellg();
+// 	file.seekg(0, ios::beg);
 
-	int tamanho = fileSize/sizeof(short);
+// 	int tamanho = fileSize/sizeof(short);
 
-	vector<short> b(tamanho);
-	for (int i = 0; i < tamanho; i++)
-	{
-		file.read((char *) &b[i], sizeof(short));
-	}
-	file.close();
+// 	vector<short> b(tamanho);
+// 	for (int i = 0; i < tamanho; i++)
+// 	{
+// 		file.read((char *) &b[i], sizeof(short));
+// 	}
+// 	file.close();
 
-	string c = lzw.decode(b);
+// 	string c = lzw.decode(b);
 
-	ofstream out ("../files/dna.50MB", ios::out | ios::binary);
-	for (int i = 0; i < c.length(); i++)
-	{
-		out.write((char*) &c[i], sizeof(char));
-	}
-	out.close();
+// 	ofstream out ("../files/dna.50MB", ios::out | ios::binary);
+// 	for (int i = 0; i < c.length(); i++)
+// 	{
+// 		out.write((char*) &c[i], sizeof(char));
+// 	}
+// 	out.close();
 
-	return 0;
-}
+// 	return 0;
+// }
