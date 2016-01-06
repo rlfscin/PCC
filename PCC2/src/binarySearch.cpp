@@ -23,9 +23,9 @@ public:
 			|| strcmp(P.c_str(), getSuffix(T.substr(S[0]), P.length()).c_str()) == 0) {
 			return 0;			
 		}
-		// P >=m T[Sn..]
+		// P >m T[Sn..]
 		else if (strcmp(P.c_str(), getSuffix(T.substr(S[S.size() - 1]), P.length()).c_str()) == 1) {
-			return S.size()-1;
+			return S.size();
 		}
 		else {
 			int l = 0, r = S.size() - 1;
@@ -51,9 +51,9 @@ public:
 			|| strcmp(getSuffix(T.substr(S[S.size() - 1]), P.length()).c_str(), P.c_str()) == 0) {
 			return S.size()-1;			
 		}
-		// T[S1..] >=m P
+		// T[S1..] >m P
 		else if (strcmp(getSuffix(T.substr(S[0]), P.length()).c_str(), P.c_str()) == 1) {
-			return 0;
+			return -1;
 		}
 		else {
 			int l = 0, r = S.size() - 1;
@@ -77,14 +77,12 @@ public:
 		int predecessor = findPredecessor(T, P, S);
 		int sucessor = findSucessor(T, P, S);		
 		
-		printf("predecessor: %d\nsucessor: %d\n", predecessor, sucessor);
-		if ((P < getSuffix(T.substr(S[predecessor]), P.length()) 
-				&& P < getSuffix(T.substr(S[sucessor]), P.length()))
-			|| (P > getSuffix(T.substr(S[predecessor]), P.length()) 
-				&& P > getSuffix(T.substr(S[sucessor]), P.length()))){
+		/*printf("predecessor: %d\nsucessor: %d\n", predecessor, sucessor);*/
+		if ((sucessor == S.size()) || (predecessor == -1)
+			||(P > T.substr(S[predecessor]) && P < T.substr(S[sucessor]))) {
 			vector<string> matches(0);
 			return matches;
-		} else if (P <= T.substr(S[predecessor]) || P >= T.substr(S[sucessor])) {
+		} else {
 			vector<string> matches(predecessor - sucessor + 1);
 
 			int j = 0;
@@ -94,19 +92,25 @@ public:
 				j++;
 			}
 			return matches;
-		} else {
-			vector<string> matches(0);
-			return matches;
 		}		
 	}
 };
 
 /*int main() {
-	binarySearch bs;
+	LZ78 bs;
 	suffixarray sa;
 
-	string T = "bobocel";
-	string P = "l";
+	ifstream in;
+	std::ostringstream contents;
+	string contentsStr;
+	in.open("C:\\Users\\Bruno\\Documents\\UFPE\\Eletivas\\PCC\\meComprima_menor.txt", std::ios::in | std::ios::binary);
+	contents.str("");
+	contents << in.rdbuf();
+	in.close();
+	contentsStr = contents.str();
+
+	string T = "pedro e bruno sao legais, mas bruno eh muito mais fodao";
+	string P = ",";
 
 	vector<int> S = sa.index(T);
 
@@ -119,7 +123,7 @@ public:
 	printf("qtd: %d\n", matches.size());
 	for (int i = 0; i < matches.size(); i++)
 	{
-		printf("occ %d: %s\n", i + 1, matches[i].c_str());
+		printf("occ %d: %s$\n", i + 1, matches[i].c_str());
 	}
 	
 	return 0;
