@@ -174,7 +174,7 @@ int main() {
 	ifstream in;
 	std::ostringstream contents;
 	string contentsStr;
-	in.open("proteins.10MB");
+	in.open("../meComprima_menor.txt");
 	contents.str("");
 	contents << in.rdbuf();
 	in.close();
@@ -185,7 +185,7 @@ int main() {
 	eAlphabet.push_back('1');
 
 	vector<char> alphabet;
-	string a = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#%&$\'()*+,-./:;<=>?@[\\]^_`{|}~";	
+	string a = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#%&$\'()*+,-./:;<=>?@[\\]^_`{|}~\n";	
 	
 	for (int i = 0; i < a.length(); i++) {
 		alphabet.push_back(a[i]);
@@ -239,14 +239,17 @@ int main() {
 	vector<char> fromRubens = readFromFile("Rubens.inf");
 	string content(fromRubens.begin(), fromRubens.end());
 
-
 	string text = lz78.decode(content, alphabet, eAlphabet);
+	cout << "passou do decode" << endl;
 
 	ofstream file2;
 	file2.open("saida.txt");
 	file2 << text;
 	file2.close();
 
+	cout << (code == content) << endl;
+
+	cout << text << endl;
 	if(text == contentsStr){
 		printf("YES\n");
 	}
@@ -255,12 +258,11 @@ int main() {
 	}
 
 
-
-	if(code.length() > contentsStr.length()) {
-		cout << "sim" << endl;
-	} else {
-		cout << "nao" << endl;
-	}
+	// if(code.length() > contentsStr.length()) {
+	// 	cout << "sim" << endl;
+	// } else {
+	// 	cout << "nao" << endl;
+	// }
 
 	// printf("%s\n", contentsStr.c_str());
 	// ofstream out ("saida.txt", std::ofstream::binary);

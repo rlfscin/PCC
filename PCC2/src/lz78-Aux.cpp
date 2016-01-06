@@ -81,12 +81,10 @@ vector<char> readFromFile(string fileName){
 
 	int tamanho = fileSize/sizeof(int);
 	vector<int> t(tamanho);
-	//for (int i = 0; i < tamanho; i++)
-	//{
-		//file.read((char *) &t[i], sizeof(int));
-		//printf("Travou aqui %d\n",i);
-	//}
-	//printf("Saiu aqui");
+	for (int i = 0; i < tamanho; i++)
+	{
+		file.read((char *) &t[i], sizeof(int));
+	}
 	file.close();
 	
 	return convertToString(t);
