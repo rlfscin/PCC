@@ -25,33 +25,52 @@ public:
 
 	vector<int> index(string text) {
 		int n = text.length();
-		vector<int> P(n);
-
-		for(int i = 0; i < n; i++) {
-			P[i] = text[i];
-		}
-
-		int count = 1;
-		int lg2 = ceil(log2(n));
 		vector<x> L(n);
 
+		for (int i = 0; i < n; i++) {
+			L[i].a = text[i] - 'a';
+			L[i].b = (i + 1 < n) ? (text[i + 1] - 'a'): -1;
+			L[i].index = i;
+		}
 
-		for(int k = 1; k < lg2; k++) {
-			for (int i = 0; i < n; i++) {
-				L[i].a = P[i];
-				L[i].b = i + count < n ? P[i + count] : -1;
-				L[i].index = i;
+		sort(L.begin(), L.end(), this->cmp);
+
+		vector<int> ind(n);
+
+		int nextIdx;
+		for (int k = 4; k < 2*n; k = k*2) {
+			int rank = 0;
+			int previousRank = L[0].a;
+			L[0].a = rank;
+			ind[L[0].index] = 0;
+
+			for (int i = 1; i < n; i++) {
+				if (L[i].a == previousRank && L[i].b == L[i - 1].b) {
+					previousRank = L[i].a;
+					L[i].a = rank;
+				} else {
+					previousRank = L[i].a;
+					L[i].a = ++rank;
+				}
+				ind[L[i].index] = i;
+			}
+
+			for (int i = 0; i < n; i++)
+			{
+				nextIdx = L[i].index + k / 2;
+				L[i].b = (nextIdx < n) ? L[ind[nextIdx]].a : -1;
 			}
 
 			sort(L.begin(), L.end(), this->cmp);
-
-			for (int i = 0; i < n; i++) {
-				P[L[i].index] = i > 0 && L[i].a == L[i-1].a && L[i].b == L[i-1].b ? P[L[i-1].index] : i;
-			}
-			count *= 2;
 		}
 
-		return P;
+		vector<int> sarray(n);
+		for (int i = 0; i < n; i++)
+		{
+			sarray[i] = L[i].index;
+		}
+
+		return sarray;
 	}
 };
 
