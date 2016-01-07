@@ -39,7 +39,6 @@ public:
 			if(dictionary.find(prefix + c) != dictionary.end()) {
 				prefix = prefix + c;
 			} else {
-				// code.push_back(this->codeForWord(prefix, dictionary));
 				code.push_back(dictionary.find(prefix)->second);
 
 				if(dictionary.size() > 65520) {
@@ -53,7 +52,6 @@ public:
 						dictionary.insert(pair<string, short>(a, i));
 					}
 
-					// cout << "clear" << endl;
 				} else {
 					dictionary.insert(pair<string, short>(prefix + c, codeword));
 					codeword++;
@@ -63,22 +61,9 @@ public:
 			}
 		}
 
-		// code.push_back(this->codeForWord(prefix, dictionary));
 		code.push_back(dictionary.find(prefix)->second);
 
-		cout << dictionary.size() << endl;
-
 		return code;
-	}
-
-	int codeForWord(string s, unordered_map<string, int> dic) {
-		unordered_map<string, int>::const_iterator it = dic.find(s);
-
-		if(it != dic.end()) {
-			return it->second;
-		} else {
-			return s[0];
-		}
 	}
 
 	string decode(vector<short> code) {
@@ -113,11 +98,10 @@ public:
 
 				text += s;
 				c = s[0];
-				// aux = this->wordForCode(previousCodeWord, dictionary);
+
 				aux = dictionary.find(previousCodeWord)->second;
 				aux += c;
 			} else {
-				// x = this->wordForCode(previousCodeWord, dictionary);
 				x = dictionary.find(previousCodeWord)->second;
 				s = x;
 				s += c;
@@ -127,11 +111,6 @@ public:
 				aux = x;
 				aux += c;
 			}
-
-			// text += s;
-			// c = s[0];
-			// aux = this->wordForCode(previousCodeWord, dictionary);
-			// aux += c;
 
 			if(dictionary.size() > 65520) {
 				dictionary.clear();
@@ -143,7 +122,6 @@ public:
 					dictionary.insert(pair<int, string>(i, a));
 				}
 
-				// cout << "clear" << endl;
 			} else {
 				dictionary.insert(pair<short, string>(codeword, aux));
 				previousCodeWord = curretCW;
@@ -152,22 +130,8 @@ public:
 
 		}
 
-		cout << dictionary.size() << endl;
-
 		return text;
 	}
-
-	// string wordForCode(int cw, unordered_map<int, string> dic) {
-	// 	unordered_map<int, string>::const_iterator it = dic.find(cw);
-
-	// 	if(it != dic.end()) {
-	// 		return it->second;
-	// 	} else {
-	// 		string a;
-	// 		a = (char) cw;
-	// 		return a;
-	// 	}
-	// }
 };
 
 
