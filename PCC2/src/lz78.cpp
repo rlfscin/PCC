@@ -33,6 +33,7 @@ public:
 	// 	return false;
 	// }
 
+
 	string inttostr(int n, vector<char> alphabet)
 	{
 		if (n == 0) {
@@ -106,44 +107,47 @@ public:
 		return code;
 	}
 
-	int strtoint(string s, int  indice,  vector<char> alphabet)
+	int strtoint(string & s, int j, int k, int indice)
 	{
-		int r = alphabet.size();
+		int r = 2;
 		int rPow = 1;
 		int n = 0;
 
 		int pos;
 
-		for (int j = s.length()-1; j >= indice; j--)
+		for (int i = j + k-1; i >= j + indice; i--)
 		{
-			pos = find(alphabet.begin(), alphabet.end(), s[j]) - alphabet.begin();
+			pos = s[i] - '0';
 			n = n + (pos * rPow);
 			rPow = rPow * r;
 		}
 		return n;
 	}
 
-	pair<int, int> cw_decode(string code, vector<char> E)
+	pair<int, int> cw_decode(string & code, int indice)
 	{
-		int k = 1;
+		int k = 0;
 		int j = 0;
+		int ktemp = 1;
 
 		string y = "";
 
 		pair<int, int> ret;		
 
-		while (j == 0 || code[j] != E[0])
+		while (j == 0 || code[j + k + indice] != '0')
 		{
-			y = code.substr(j, k);
+
 			j += k;
-			k = strtoint(y, 0, E) + 2;
+			k = ktemp;
+			y = code.substr(j + indice, k);
+			ktemp = strtoint(code, j+indice, k, 0) + 2;
 		}
-		ret.first = strtoint(y, 1,  E);
-		ret.second = j + 1;
+		ret.first = strtoint(code, j+indice, k, 1);
+		ret.second = j + k + 1;
 		return ret;
 	}
 
-	string decode(string code, vector<char> A, vector<char> E)
+	string decode(string & code, vector<char> & A)
 	{
 		string txt = "";
 		vector<pair<int, int> > dictionary;
@@ -154,9 +158,9 @@ public:
 		pair<int, int> pL, kl;
 
 		while(i < n) {
-			pL = cw_decode(code.substr(i), E);
+			pL = cw_decode(code, i);
 			i += pL.second;
-			kl = cw_decode(code.substr(i), E);
+			kl = cw_decode(code, i);
 			i += kl.second;
 
 			txt = txt + (txt.substr(dictionary[pL.first].first, dictionary[pL.first].second - dictionary[pL.first].first) + A[kl.first]);
@@ -174,7 +178,7 @@ int main() {
 	ifstream in;
 	std::ostringstream contents;
 	string contentsStr;
-	in.open("proteins.10MB");
+	in.open("english.10MB");
 	contents.str("");
 	contents << in.rdbuf();
 	in.close();
@@ -185,12 +189,14 @@ int main() {
 	eAlphabet.push_back('1');
 
 	vector<char> alphabet;
-	string a = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#%&$\'()*+,-./:;<=>!?@[\\]^_`{|}~\n";	
 	
-	for (int i = 0; i < a.length(); i++) {
-		alphabet.push_back(a[i]);
+	
+
+	for (short i = 0; i < 256; i++) {
+		alphabet.push_back((char)i);
 	}
 	
+
 	string code = lz78.encode(contentsStr, alphabet, eAlphabet);
 	printf("Comprimiu\n");
 
@@ -244,7 +250,7 @@ int main() {
 	*/
 
 	printf("Descomprimindo\n");
-	string text = lz78.decode(code, alphabet, eAlphabet);
+	string text = lz78.decode(code, alphabet);
 	cout << "passou do decode" << endl;
 
 	ofstream file2;
