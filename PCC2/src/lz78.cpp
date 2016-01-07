@@ -107,19 +107,16 @@ public:
 		return code;
 	}
 
-	int strtoint(string & s, int j, int k, int indice)
+	int strtoint(string & s, int j, int k)
 	{
-		int r = 2;
-		int rPow = 1;
 		int n = 0;
+		int m = j + k -1;
 
-		int pos;
-
-		for (int i = j + k-1; i >= j + indice; i--)
+		for (int i = j + k-1; i >= j; i--)
 		{
-			pos = s[i] - '0';
-			n = n + (pos * rPow);
-			rPow = rPow * r;
+			if(s[i] == '1'){
+				n += 1 << (m - i);
+			}
 		}
 		return n;
 	}
@@ -130,19 +127,16 @@ public:
 		int j = 0;
 		int ktemp = 1;
 
-		string y = "";
 
 		pair<int, int> ret;		
 
 		while (j == 0 || code[j + k + indice] != '0')
 		{
-
 			j += k;
 			k = ktemp;
-			y = code.substr(j + indice, k);
-			ktemp = strtoint(code, j+indice, k, 0) + 2;
+			ktemp = strtoint(code, j+indice, k) + 2;
 		}
-		ret.first = strtoint(code, j+indice, k, 1);
+		ret.first = strtoint(code, j+indice + 1, k - 1);
 		ret.second = j + k + 1;
 		return ret;
 	}
