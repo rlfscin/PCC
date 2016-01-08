@@ -14,7 +14,9 @@
 ipmt
 lz78
 sa
-PCC2/src/lzw
+bs
+lzw
+PCC2/testes/*
 !PCC2/bin/ipmt
 !PCC2/files/arquivodeindice.idx
 !PCC2/README.txt

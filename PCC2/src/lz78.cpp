@@ -11,7 +11,6 @@
 #include <sstream>
 #include <stdio.h>
 #include <bitset>
-#include "lz78-Aux.cpp"
 
 using namespace std;
 
@@ -33,6 +32,7 @@ public:
 	// 	}
 	// 	return false;
 	// }
+
 
 	string inttostr(int n, vector<char> alphabet)
 	{
@@ -107,44 +107,41 @@ public:
 		return code;
 	}
 
-	int strtoint(string s, vector<char> alphabet)
+	int strtoint(string & s, int j, int k)
 	{
-		int r = alphabet.size();
-		int rPow = 1;
 		int n = 0;
+		int m = j + k -1;
 
-		int pos;
-
-		for (int j = s.length()-1; j > -1; j--)
+		for (int i = j + k-1; i >= j; i--)
 		{
-			pos = find(alphabet.begin(), alphabet.end(), s[j]) - alphabet.begin();
-			n = n + (pos * rPow);
-			rPow = rPow * r;
+			if(s[i] == '1'){
+				n += 1 << (m - i);
+			}
 		}
 		return n;
 	}
 
-	pair<int, int> cw_decode(string code, vector<char> E)
+	pair<int, int> cw_decode(string & code, int indice)
 	{
-		int k = 1;
+		int k = 0;
 		int j = 0;
+		int ktemp = 1;
 
-		string y = "";
 
 		pair<int, int> ret;		
 
-		while (j == 0 || code[j] != E[0])
+		while (j == 0 || code[j + k + indice] != '0')
 		{
-			y = code.substr(j, k);
 			j += k;
-			k = strtoint(y, E) + 2;
+			k = ktemp;
+			ktemp = strtoint(code, j+indice, k) + 2;
 		}
-		ret.first = strtoint(y.substr(1), E);
-		ret.second = j + 1;
+		ret.first = strtoint(code, j+indice + 1, k - 1);
+		ret.second = j + k + 1;
 		return ret;
 	}
 
-	string decode(string code, vector<char> A, vector<char> E)
+	string decode(string & code, vector<char> & A)
 	{
 		string txt = "";
 		vector<pair<int, int> > dictionary;
@@ -155,10 +152,11 @@ public:
 		pair<int, int> pL, kl;
 
 		while(i < n) {
-			pL = cw_decode(code.substr(i), E);
+			pL = cw_decode(code, i);
 			i += pL.second;
-			kl = cw_decode(code.substr(i), E);
+			kl = cw_decode(code, i);
 			i += kl.second;
+
 			txt = txt + (txt.substr(dictionary[pL.first].first, dictionary[pL.first].second - dictionary[pL.first].first) + A[kl.first]);
 			dictionary.push_back(pair<int,int>(txt.length() - ((dictionary[pL.first].second - dictionary[pL.first].first) + 1), txt.length()));
 		}
@@ -174,7 +172,7 @@ int main() {
 	ifstream in;
 	std::ostringstream contents;
 	string contentsStr;
-	in.open("../meComprima_menor.txt");
+	in.open("english.10MB");
 	contents.str("");
 	contents << in.rdbuf();
 	in.close();
@@ -185,61 +183,68 @@ int main() {
 	eAlphabet.push_back('1');
 
 	vector<char> alphabet;
-	string a = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#%&$\'()*+,-./:;<=>?@[\\]^_`{|}~\n";	
 	
-	for (int i = 0; i < a.length(); i++) {
-		alphabet.push_back(a[i]);
+	
+
+	for (short i = 0; i < 256; i++) {
+		alphabet.push_back((char)i);
 	}
 	
+
 	string code = lz78.encode(contentsStr, alphabet, eAlphabet);
 	printf("Comprimiu\n");
 
 	//--------------------------------------------------------------------------
-	saveInFile("Rubens.inf",code);
+	//Save file
 
-	// write in a binary file
-	// ofstream outfile ("compressed2.bin", std::ios::binary);
-	// unsigned short len = code.length();
-	// unsigned short bytes[4];
-	// bytes[0] = (len) & 0xFF;
-	// bytes[1] = (len >> 8) & 0xFF;
-	// outfile.write((char*)bytes, 2);
-	// outfile.write(code.c_str(), 8*len);
 
-	// unsigned long x = code.length();
-	// bitset<code.length()> binario (code);
-	// ofstream outfile ("compressed2.bin", std::ios::binary);
-	// unsigned long n = binario.to_ulong() ;
-    // outfile.write( reinterpret_cast<const char*>(&n), sizeof(n) ) ;
+	/*//write in a binary file
+	ofstream outfile ("compressed2.bin", std::ios::binary);
+	unsigned short len = code.length();
+	unsigned short bytes[4];
+	bytes[0] = (len) & 0xFF;
+	bytes[1] = (len >> 8) & 0xFF;
+	outfile.write((char*)bytes, 2);
+	outfile.write(code.c_str(), 8*len);
+	outfile.close();
+
+	//unsigned long x = code.length();
+	//bitset<code.length()> binario (code);
+	//ofstream outfile ("compressed.bin", std::ios::binary);
+	//unsigned long n = binario.to_ulong() ;
+    //outfile.write( reinterpret_cast<const char*>(&n), sizeof(n) ) ;
+    //outfile.close();
 	
-	// ofstream outfile ("compressed2.bin", std::ios::binary);
-	// outfile.write((char*) code.c_str(), code.size());
-	
+	//ofstream outfile2 ("compressed2.bin", std::ios::binary);
+	//outfile2.write((char*) code.c_str(), code.size());
+	//outfile2.close();	
 	
 	
 
+	cout << "Tamanho do texto original " << contentsStr.length()<< endl;
+ 
 	// read binary file
-	//unsigned short val;
-	//unsigned char bytess[2];
-	//ifstream file ("compressed2.bin", std::ifstream::binary);
-	//file.read((char*) bytess, 2);
-	//val = bytess[0] | (bytess[1] << 8);
-	//char* buffer = new char[val];
-	//file.read(buffer, val);
-	//string str(buffer, val);
-	//delete[] buffer;
-	//in.open("compressed2.bin", std::ios::binary);
-	//contents.str("");
-	//contents << in.rdbuf();
-	//in.close();
-	//contentsStr = contents.str();
+	unsigned short val;
+	unsigned char bytess[2];
+	ifstream file ("compressed2.bin", std::ifstream::binary);
+	file.read((char*) bytess, 2);
+	val = bytess[0] | (bytess[1] << 8);
+	char* buffer = new char[val];
+	file.read(buffer, val);
+	string str(buffer, val);
+	delete[] buffer;
+	in.open("compressed2.bin", std::ios::binary);
+	contents.str("");
+	contents << in.rdbuf();
+	in.close();
+	contentsStr = contents.str();
+
+	
+	cout << "Eles tao iguais " << contentsStr.length() <<  "    " << code.length() << endl;
+	*/
 
 	printf("Descomprimindo\n");
-
-	vector<char> fromRubens = readFromFile("Rubens.inf");
-	string content(fromRubens.begin(), fromRubens.end());
-
-	string text = lz78.decode(content, alphabet, eAlphabet);
+	string text = lz78.decode(code, alphabet);
 	cout << "passou do decode" << endl;
 
 	ofstream file2;
@@ -247,9 +252,6 @@ int main() {
 	file2 << text;
 	file2.close();
 
-	cout << (code == content) << endl;
-
-	cout << text << endl;
 	if(text == contentsStr){
 		printf("YES\n");
 	}
