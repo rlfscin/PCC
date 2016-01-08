@@ -16,15 +16,13 @@ using namespace std;
 int main(int argc, char* argv[]) {
 
 	int c;
-	char *indextype = NULL;
 	char *compression = NULL;
 	char *patterns = NULL;
 	bool count = false;
 
 	while(1) {
 		static struct option long_options[] = {
-			{"indextype", 	required_argument, 0,  1 },
-			{"compression", required_argument, 0,  2 },
+			{"compression", required_argument, 0,  1 },
 			{"pattern", 	required_argument, 0, 'p'},
 			{"count", 		no_argument,	   0, 'c'},
 			{"help", 		no_argument, 	   0, 'h'}
@@ -39,10 +37,6 @@ int main(int argc, char* argv[]) {
 
 		switch (c) {
 			case 1:
-				indextype = optarg;
-				break;
-
-			case 2:
 				compression = optarg;
 				break;
 
@@ -65,7 +59,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if(strcmp(argv[optind], "index") == 0) {
-		printf("option=%s, indextype=%s, compression=%s\n\n", argv[optind], indextype, compression);
+		printf("option=%s, compression=%s\n\n", argv[optind], compression);
 		/*
 		* Pegar arquivo de entrada
 		* Criar array de sufixo
@@ -106,7 +100,7 @@ int main(int argc, char* argv[]) {
 			ofstream outfile (outfileName, ios::out | ios::binary);
 
 			int sizeOfSuffixStr = compressed.size();
-			printf("%d\n", sizeOfSuffixStr);
+			printf("%d\n", sizeOfSuffixStr); // debug pra saber pq nao pega 1024
 			outfile.write((const char*) &sizeOfSuffixStr, sizeof(int));
 
 			for (int i = 0; i < compressed.size(); ++i) {
