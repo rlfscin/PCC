@@ -11,16 +11,64 @@ using namespace std;
 
 class suffixarray {
 public:
+	vector<int> llcp;
+	vector<int> rlcp;
 	suffixarray() {
 
 	}
-
 	struct x {
 		int a, b, index;
 	};
 
 	static int cmp(struct x one, struct x another) {
 		return one.a == another.a ? (one.b < another.b ? 1 : 0) : (one.a < another.a ? 1 : 0);
+	}
+	
+	void initializeVectors(int size){
+		llcp.resize(size);
+		rlcp.resize(size);
+	}
+	
+	vector<int> getLlcp(){
+		return llcp;
+	}
+	
+	vector<int> getRlcp(){
+		return rlcp;
+	}
+	
+	int lcp(string x, string y) {
+		int i;
+        for (i = 0; 
+        	i < x.length() 
+        	&& i < y.length() 
+        	&& x[i] == y[i];
+        	i++);
+        return i;
+    }
+	
+	vector<int> getSALCP(vector<int> sa, string T) {
+		vector<int> salcp(sa.size()-1);
+		for(int i = 0; i < salcp.size(); i++) {
+			salcp[i] = lcp(T.substr(sa[i]), T.substr(sa[i+1]));
+		}
+		return salcp;
+	}
+	
+	void buildLlcpRlcp(string T, vector<int> S, int lo, int hi){
+	    int m = 0;
+	    if (hi - lo == 1) {
+	    	return;
+	    }
+	    if (hi - lo > 1) {
+	    	m = floor((hi + lo) / 2);
+	    }
+	
+	    llcp[m] = lcp(T.substr(S[lo]), T.substr(S[m]));
+	    rlcp[m] = lcp(T.substr(S[m]), T.substr(S[hi]));
+	    
+	    buildLlcpRlcp(T, S, lo, m);
+	    buildLlcpRlcp(T, S, m, hi);
 	}
 
 	vector<int> index(string text) {
