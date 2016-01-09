@@ -19,3 +19,13 @@ lzw
 PCC2/testes/*
 !PCC2/bin/ipmt
 !PCC2/README.txt
+
+PCC2/lz782.cpp
+
+PCC2/src/english.10MB
+
+PCC2/src/proteins.10MB
+
+PCC2/src/proteins.25MB
+
+PCC2/src/sarray
