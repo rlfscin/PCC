@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int lcp(string x,string y){
+inline int lcp(string x,string y){
 	int lx = x.length();
 	int ly = y.length();
 	int i = 0;
@@ -16,40 +16,7 @@ int lcp(string x,string y){
 	return i;
 }
 
-void print_sarr(string txt, vector<int> sarray){
-	int n = txt.length();
-	printf("i\tsa[i]\ti-esimo sufixo\n");
-	for(int i  = 0; i < n; i++){
-		printf("%d\t%d\t\"%s\"\n",i,sarray[i],txt.substr(sarray[i]).c_str());
-	}
-}
-
-bool sorter(pair<string, int> p1, pair<string, int> p2){
-	if(p1.first == p2.first){
-		return p1.second < p2.second;
-	}
-	return p1.first < p2.first;
-}
-
-vector<int> build_sarray_naive(string text){
-	int n = text.length();
-	vector<pair<string,int> > suffs;
-	for(int i = 0; i < n; i++){
-		pair<string, int> p;
-		p.first = text.substr(i);
-		p.second = i;
-		suffs.push_back(p);
-	}
-	sort(suffs.begin(), suffs.end(),sorter);
-	vector<int> v;
-	for(int i = 0; i < n; i++){
-		v.push_back(suffs[i].second);
-	}
-	return v;
-
-}
-
-int scmp(string x, string y, int m){
+inline int scmp(string & x, string & y, int m){
 	int lx = x.length();
 	int ly = y.length();
 	int i = 0;
@@ -78,28 +45,28 @@ int scmp(string x, string y, int m){
 	}
 }
 
-bool gt(string x, string y, int m){
+inline bool gt(string x, string y, int m){
 	return scmp(x, y, m ) > 0;
 }
 
-bool geq(string x, string y, int m){
+inline bool geq(string x, string y, int m){
 	return scmp(x, y, m) >= 0;
 }
 
-bool lt(string x,string  y,int m){
+inline bool lt(string x,string  y,int m){
 	return scmp(x, y, m) < 0;
 }
 
-bool leq(string x,string y,int m){
+inline bool leq(string x,string y,int m){
 	return scmp(x, y, m) <= 0;
 }
 
-bool eq(string x,string y,int m){
+inline bool eq(string x,string y,int m){
 	return scmp(x, y, m) == 0;
 }
 
 
-int succ(string text, string pat, vector<int> sarray){
+int succ(string & text, string & pat, vector<int> & sarray){
 	int patlen = pat.length();
 	int txtlen = text.length();
 
@@ -125,7 +92,7 @@ int succ(string text, string pat, vector<int> sarray){
 	return r;
 }
 
-int succ_llcp(string text,string pat,vector<int> sarray,vector<int> Llcp, vector<int> Rlcp){
+int succ_llcp(string & text,string & pat,vector<int> & sarray,vector<int> & Llcp, vector<int> & Rlcp){
 	int patlen = pat.length();
 	int txtlen = text.length();
 
@@ -190,7 +157,7 @@ int succ_llcp(string text,string pat,vector<int> sarray,vector<int> Llcp, vector
 	return r;
 }
 
-int pred_llcp(string text, string pat, vector<int> sarray, vector<int> Llcp, vector<int> Rlcp){
+int pred_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & Llcp, vector<int> & Rlcp){
 	int patlen = pat.length();
 	int txtlen = text.length();
 
@@ -255,7 +222,7 @@ int pred_llcp(string text, string pat, vector<int> sarray, vector<int> Llcp, vec
 }
 
 
-int pred(string text, string pat, vector<int> sarray){
+inline int pred(string & text, string & pat, vector<int> & sarray){
 	int patlen = pat.length();
 	int txtlen = text.length();
 
@@ -285,7 +252,7 @@ int pred(string text, string pat, vector<int> sarray){
 
 
 
-void compute_LRlcp(string text,vector<int> sarray, vector<int> & Llcp,vector<int> & Rlcp,int  l,int r){
+void compute_LRlcp(string & text,vector<int> & sarray, vector<int> & Llcp,vector<int> & Rlcp,int l,int r){
 	if ((r - l) > 1){
 		int h = (l + r) / 2;
 
@@ -297,7 +264,7 @@ void compute_LRlcp(string text,vector<int> sarray, vector<int> & Llcp,vector<int
 	}
 }
 
-vector<int> match(string text,string  pat,vector<int> sarray,vector<int> Llcp,vector<int> Rlcp){
+inline vector<int> match(string & text,string & pat, vector<int> & sarray, vector<int> & Llcp, vector<int> & Rlcp){
 	printf("trying to match against \'%s\'\n" , pat.c_str());
 	int r = pred(text, pat, sarray);
 	printf("predecessor (R): %d / %d (com lcp)\n" , r, pred_llcp(text, pat, sarray, Llcp, Rlcp));
@@ -310,11 +277,11 @@ vector<int> match(string text,string  pat,vector<int> sarray,vector<int> Llcp,ve
 	return v;
 }
 
-bool sorter2(pair<string, int> p1, pair<string, int> p2){
+bool sorter2(const pair<string, int> & p1,const pair<string, int> & p2){
 	return p1.first < p2.first;
 }
 
-bool sorter3(pair<int,pair<int,int> > p1, pair<int, pair<int,int> > p2){
+bool sorter3(const pair<int,pair<int,int> > & p1,const pair<int, pair<int,int> > & p2){
 	if (p1.first == p2.first){
 		if(p1.second.first == p2.second.first){
 			return p1.second.second < p2.second.second;
@@ -324,7 +291,7 @@ bool sorter3(pair<int,pair<int,int> > p1, pair<int, pair<int,int> > p2){
 	return p1.first < p2.first;
 }
 
-vector<int> build_sarray_smart(string txt){
+vector<int> build_sarray_smart(string & txt){
 	int txtlen = txt.length();
 	int l = (int) ceil(log2(txtlen));
 	vector<pair<string,int> > v;
@@ -396,7 +363,6 @@ int main(){
 	int textlen = txt.length();
 
 	vector<int> sarray = build_sarray_smart(txt);
-	print_sarr(txt, sarray);
 
 	vector<int> Llcp(textlen);
 	vector<int> Rlcp(textlen);
