@@ -24,7 +24,7 @@ public:
 		int codeWordForPrefix = 0;
 		char c;
 
-		unordered_map<int, pair<int, char> > code;
+		map<int, pair<int, char> > code;
 		int aux = 0;
 
 		for(int i = 0; i < n; i++) {
@@ -60,7 +60,7 @@ public:
 
 	inline string decode(unordered_map<int, pair<int, char> > & code) {
 		unordered_map<int, string> dictionary;
-		unordered_map<int, pair<int, char> >::iterator it;
+		map<int, pair<int, char> >::iterator it;
 		int dictionaryIndex = 1;
 		int codeWord;
 		char c;
@@ -128,4 +128,3 @@ public:
 
  	return 0;
  }
-
