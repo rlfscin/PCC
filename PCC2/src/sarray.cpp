@@ -1,7 +1,10 @@
 #include <iostream>
+#include <fstream>
+#include <iostream>
 #include <vector>
 #include <math.h>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -11,6 +14,16 @@ inline int lcp(string x,string y){
 	int i = 0;
 
 	while ((i < lx) && (i < ly) && (x[i] == y[i])){
+		i += 1;
+	}
+	return i;
+}
+
+inline int lcp2(string & txt, int x, int y){
+	int n = txt.length();
+	int i = 0;
+
+	while ((i < n) && (txt[x + i] == txt[y + i])){
 		i += 1;
 	}
 	return i;
@@ -256,8 +269,8 @@ void compute_LRlcp(string & text,vector<int> & sarray, vector<int> & Llcp,vector
 	if ((r - l) > 1){
 		int h = (l + r) / 2;
 
-		Llcp[h] = lcp(text.substr(sarray[l]), text.substr(sarray[h]));
-		Rlcp[h] = lcp(text.substr(sarray[r]), text.substr(sarray[h]));
+		Llcp[h] = lcp2(text, sarray[l], sarray[h]);
+		Rlcp[h] = lcp2(text, sarray[r], sarray[h]);
 
 		compute_LRlcp(text, sarray, Llcp, Rlcp, l, h);
 		compute_LRlcp(text, sarray, Llcp, Rlcp, h, r);
@@ -277,11 +290,11 @@ inline vector<int> match(string & text,string & pat, vector<int> & sarray, vecto
 	return v;
 }
 
-bool sorter2(const pair<string, int> & p1,const pair<string, int> & p2){
+bool sorter1(const pair<char, int> & p1, const pair<char, int> & p2){
 	return p1.first < p2.first;
 }
 
-bool sorter3(const pair<int,pair<int,int> > & p1,const pair<int, pair<int,int> > & p2){
+bool sorter2(const pair<int,pair<int,int> > & p1,const pair<int, pair<int,int> > & p2){
 	if (p1.first == p2.first){
 		if(p1.second.first == p2.second.first){
 			return p1.second.second < p2.second.second;
@@ -294,19 +307,19 @@ bool sorter3(const pair<int,pair<int,int> > & p1,const pair<int, pair<int,int> >
 vector<int> build_sarray_smart(string & txt){
 	int txtlen = txt.length();
 	int l = (int) ceil(log2(txtlen));
-	vector<pair<string,int> > v;
+	vector<pair<char,int> > v;
 	for(int i = 0; i < txtlen; i++){
-		pair<string, int> p;
-		p.first = txt.substr(i);
+		pair<char, int> p;
+		p.first = txt[i];
 		p.second = i;
 		v.push_back(p);
 	}
 
-	sort(v.begin(), v.end(), sorter2);
+	sort(v.begin(), v.end(), sorter1);
 
+	vector<int> p(txtlen);
 
-	int p[txtlen];
-	memset(p, -1, txtlen * sizeof(int));
+	memset(&p[0], -1, txtlen * sizeof(int));
 	int k = 0;
 
 	for(int i = 0; i < txtlen; i++){
@@ -316,6 +329,7 @@ vector<int> build_sarray_smart(string & txt){
 
 		p[v[i].second] = k;
 	}
+
 
 	vector<pair<int,pair<int,int> > > r(txtlen);
 
@@ -336,7 +350,7 @@ vector<int> build_sarray_smart(string & txt){
 			r[i] = t;
 		}
 
-		sort(r.begin(), r.end(), sorter3);
+		sort(r.begin(), r.end(), sorter2);
 
 		k = 0;
 
@@ -359,9 +373,17 @@ vector<int> build_sarray_smart(string & txt){
 
 int main(){
 
-	string txt = "baobabab";
-	int textlen = txt.length();
+	ifstream in;
+ 	std::ostringstream contents;
+ 	string txt = "Textando o codigo\n";
+ 	in.open("bible.txt");
+ 	contents.str("");
+ 	contents << in.rdbuf();
+ 	in.close();
+ 	txt = contents.str();
 
+
+	int textlen = txt.length();
 	vector<int> sarray = build_sarray_smart(txt);
 
 	vector<int> Llcp(textlen);
@@ -369,18 +391,22 @@ int main(){
 	memset(&Llcp[0], -1, textlen*sizeof(Llcp[0]));
 	memset(&Rlcp[0], -1, textlen*sizeof(Llcp[0]));
 
+	printf("Compute iniciando\n");
 	compute_LRlcp(txt, sarray, Llcp, Rlcp, 0, textlen - 1);
+	printf("Compute encerrando\n");
 
 	vector<string> patterns;
-	patterns.push_back("abc");
-	patterns.push_back("ab");
+	patterns.push_back("God");
+	//patterns.push_back("created");
 
 
+	
 	for(int i = 0; i < patterns.size(); i++){
 		vector<int> v = match(txt, patterns[i], sarray, Llcp, Rlcp);
+		printf("Numbers of match %lu\n",v.size());
 		printf("[");
 		for(int j = 0; j < v.size(); j++){
-			printf("%d, ",v[j]);
+			printf("%c%c%c%c%c%c, ",txt[v[j] -5 ],txt[v[j] -4 ], txt[v[j]-3],txt[v[j]-2],txt[v[j]-1],txt[v[j]]);
 		}
 		printf("]\n");
 	}
