@@ -8,6 +8,17 @@
 
 using namespace std;
 
+string txt;
+
+void print_sarr(string txt, vector<int> sarray){
+	int n = txt.length();
+	printf("i\tsa[i]\ti-esimo sufixo\n");
+	for(int i = 0; i < n; i++){
+		printf("%d\t%d\t\"%s\"\n", i,sarray[i], txt.substr(sarray[i]).c_str());
+	}
+}
+
+
 inline int lcp(string x,string y){
 	int lx = x.length();
 	int ly = y.length();
@@ -74,9 +85,6 @@ inline bool leq(string x,string y,int m){
 	return scmp(x, y, m) <= 0;
 }
 
-inline bool eq(string x,string y,int m){
-	return scmp(x, y, m) == 0;
-}
 
 
 int succ(string & text, string & pat, vector<int> & sarray){
@@ -94,6 +102,7 @@ int succ(string & text, string & pat, vector<int> & sarray){
 	int r = txtlen - 1;
 
 	while ((r - l) > 1){
+
 		int h = (l + r) / 2;
 		if (leq(pat, text.substr(sarray[h]), patlen)){
 			r = h;
@@ -290,8 +299,8 @@ inline vector<int> match(string & text,string & pat, vector<int> & sarray, vecto
 	return v;
 }
 
-bool sorter1(const pair<char, int> & p1, const pair<char, int> & p2){
-	return p1.first < p2.first;
+bool sorter1(const int & p1, const int & p2){
+	return txt[p1] < txt[p2];
 }
 
 bool sorter2(const pair<int,pair<int,int> > & p1,const pair<int, pair<int,int> > & p2){
@@ -307,15 +316,14 @@ bool sorter2(const pair<int,pair<int,int> > & p1,const pair<int, pair<int,int> >
 vector<int> build_sarray_smart(string & txt){
 	int txtlen = txt.length();
 	int l = (int) ceil(log2(txtlen));
-	vector<pair<char,int> > v;
+	vector<int> v;
 	for(int i = 0; i < txtlen; i++){
-		pair<char, int> p;
-		p.first = txt[i];
-		p.second = i;
-		v.push_back(p);
+		v.push_back(i);
 	}
+	
 
 	sort(v.begin(), v.end(), sorter1);
+
 
 	vector<int> p(txtlen);
 
@@ -323,11 +331,11 @@ vector<int> build_sarray_smart(string & txt){
 	int k = 0;
 
 	for(int i = 0; i < txtlen; i++){
-		if((i > 0) && (v[i].first != v[i - 1].first)){
+		if((i > 0) && (txt[v[i]] != txt[v[i - 1]])){
 			k += 1;
 		}
 
-		p[v[i].second] = k;
+		p[v[i]] = k;
 	}
 
 
@@ -350,17 +358,19 @@ vector<int> build_sarray_smart(string & txt){
 			r[i] = t;
 		}
 
+
 		sort(r.begin(), r.end(), sorter2);
 
-		k = 0;
+		int q = 0;
 
 		for(int i = 0; i < txtlen; i ++){
-			if ((i > 0) && (r[i].first != r[i - 1].first) && (r[i].second.first != r[i - 1].second.first) && (r[i].second.second != r[i - 1].second.second)){
-				k += 1;
+			if ((i > 0) && ((r[i].first != r[i - 1].first) || (r[i].second.first != r[i - 1].second.first))){
+				q += 1;
 			}
 
-			p[r[i].second.second] = k;
+			p[r[i].second.second] = q;
 		}
+
 
 	}
 	vector<int> ret;
@@ -375,8 +385,8 @@ int main(){
 
 	ifstream in;
  	std::ostringstream contents;
- 	string txt = "Textando o codigo\n";
- 	in.open("bible.txt");
+ 	txt = "ta comando make em?";
+ 	in.open("README.txt");
  	contents.str("");
  	contents << in.rdbuf();
  	in.close();
@@ -385,6 +395,8 @@ int main(){
 
 	int textlen = txt.length();
 	vector<int> sarray = build_sarray_smart(txt);
+
+	//print_sarr(txt, sarray);
 
 	vector<int> Llcp(textlen);
 	vector<int> Rlcp(textlen);
@@ -396,7 +408,7 @@ int main(){
 	printf("Compute encerrando\n");
 
 	vector<string> patterns;
-	patterns.push_back("God");
+	patterns.push_back("make");
 	//patterns.push_back("created");
 
 
@@ -406,7 +418,7 @@ int main(){
 		printf("Numbers of match %lu\n",v.size());
 		printf("[");
 		for(int j = 0; j < v.size(); j++){
-			printf("%c%c%c%c%c%c, ",txt[v[j] -5 ],txt[v[j] -4 ], txt[v[j]-3],txt[v[j]-2],txt[v[j]-1],txt[v[j]]);
+			printf("%d, ",v[j]);
 		}
 		printf("]\n");
 	}
