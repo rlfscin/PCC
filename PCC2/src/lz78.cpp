@@ -15,7 +15,7 @@ class LZ78 {
 public:
 	LZ78(){}
 
-	unordered_map<int, pair<int, char> > encode(string text) {
+	map<int, pair<int, char> > encode(string text) {
 		unordered_map<string, int> dictionary;
 		string prefix = "";
 		int dictionaryIndex = 1;
@@ -24,7 +24,7 @@ public:
 		int codeWordForPrefix = 0;
 		char c;
 
-		unordered_map<int, pair<int, char> > code;
+		map<int, pair<int, char> > code;
 		int aux = 0;
 
 		for(int i = 0; i < n; i++) {
@@ -58,9 +58,9 @@ public:
 		return code;
 	}
 
-	string decode(unordered_map<int, pair<int, char> > code) {
+	string decode(map<int, pair<int, char> > code) {
 		unordered_map<int, string> dictionary;
-		unordered_map<int, pair<int, char> >::iterator it;
+		map<int, pair<int, char> >::iterator it;
 		int dictionaryIndex = 1;
 		int codeWord;
 		char c;
@@ -87,45 +87,66 @@ public:
 
 };
 
-// int main() {
-// 	LZ78 lz78;
+int main() {
+	LZ78 lz78;
 
-// 	ifstream in;
-// 	std::ostringstream contents;
-// 	string contentsStr;
-// 	in.open("../testes/dna.50MB");
-// 	contents.str("");
-// 	contents << in.rdbuf();
-// 	in.close();
-// 	contentsStr = contents.str();
+	// ifstream in;
+	// std::ostringstream contents;
+	// string contentsStr;
+	// in.open("../testes/english.1024MB");
+	// contents.str("");
+	// contents << in.rdbuf();
+	// in.close();
+	// contentsStr = contents.str();
 
-// 	unordered_map<int, pair<int, char> > code = lz78.encode(contentsStr);
-// 	printf("Comprimiu\n");
+	// map<int, pair<int, char> > code = lz78.encode(contentsStr);
 
-// 	ofstream outfile ("../files/78comprimido.pt", ios::out | ios::binary);
-// 	unordered_map<int, pair<int, char> >::iterator it;
-// 	for (it = code.begin(); it != code.end(); it++)
-// 	{
-// 		outfile.write((const char*)&it->second.first, sizeof(int));
-// 		outfile.write((const char*)&it->second.second, sizeof(char));
-// 	}
-// 	outfile.close();
+	// ofstream outfile ("../files/english1024.pt", ios::out | ios::binary);
+	// map<int, pair<int, char> >::iterator it;
 
-// 	string text = lz78.decode(code);
+	// int qtd = code.size();
+	// outfile.write((const char*) &qtd, sizeof(int));
 
-// 	if(text == contentsStr) {
-// 		cout << "passasse" << endl;
-// 	} else {
-// 		cout << "nao foi dessa vez" << endl;
-// 	}
+	// for (it = code.begin(); it != code.end(); ++it)
+	// {
+	// 	outfile.write((const char*)&it->second.first, sizeof(int));
+	// 	outfile.write((const char*)&it->second.second, sizeof(char));
+	// }
+	// outfile.close();
 
-// 	ofstream out ("../files/novo78.txt", ios::out | ios::binary);
-// 	for (int i = 0; i < text.length(); i++)
-// 	{
-// 		out.write((char*) &text[i], sizeof(char));
-// 	}
-// 	out.close();
 
-// 	return 0;
-// }
+
+	// streampos fileSize;
+	// ifstream file("../files/english1024.pt", ios::in | ios::binary);
+
+	// int qtd;
+	// file.read((char *) &qtd, sizeof(int));
+
+	// map<int, pair<int, char> > code;
+
+	// int inteiro = 0;;
+	// char c = ' ';
+	// int aux = 0;
+
+	// for (int i = 0; i < qtd; i++)
+	// {
+	// 	file.read((char *) &inteiro, sizeof(int));
+	// 	file.read((char *) &c, sizeof(char));
+
+	// 	code.insert(pair<int, pair<int, char> >(aux, pair<int, char>(inteiro, c)));
+	// 	aux++;
+	// }
+	// file.close();
+
+	// string text = lz78.decode(code);
+
+	// ofstream out ("../files/english.1024MB", ios::out | ios::binary);
+	// for (int i = 0; i < text.length(); i++)
+	// {
+	// 	out.write((char*) &text[i], sizeof(char));
+	// }
+	// out.close();
+
+	// return 0;
+}
 
