@@ -25,6 +25,9 @@ void print_sarr(string txt, vector<int> sarray){
 }
 
 bool sorter(pair<string, int> p1, pair<string, int> p2){
+	if(p1.first == p2.first){
+		return p1.second < p2.second;
+	}
 	return p1.first < p2.first;
 }
 
@@ -50,7 +53,7 @@ int scmp(string x, string y, int m){
 	int lx = x.length();
 	int ly = y.length();
 	int i = 0;
-	while((i<lx) && (i < ly) && (i < m) && (x[i] == y[i])){
+	while((i < lx) && (i < ly) && (i < m) && (x[i] == y[i])){
 		i++;
 	}
 	if( i == m){
@@ -154,8 +157,8 @@ int succ_llcp(string text,string pat,vector<int> sarray,vector<int> Llcp, vector
 					R = H;
 				}
 				else{
-					l = L;
-					h = H;
+					l = h;
+					L = H;
 				}
 			}
 			else{
@@ -282,7 +285,7 @@ int pred(string text, string pat, vector<int> sarray){
 
 
 
-void compute_LRlcp(string text,vector<int> sarray, vector<int> Llcp,vector<int> Rlcp,int  l,int r){
+void compute_LRlcp(string text,vector<int> sarray, vector<int> & Llcp,vector<int> & Rlcp,int  l,int r){
 	if ((r - l) > 1){
 		int h = (l + r) / 2;
 
@@ -307,7 +310,7 @@ vector<int> match(string text,string  pat,vector<int> sarray,vector<int> Llcp,ve
 	return v;
 }
 
-bool sorter2(pair<char, int> p1, pair<char, int> p2){
+bool sorter2(pair<string, int> p1, pair<string, int> p2){
 	return p1.first < p2.first;
 }
 
@@ -324,10 +327,10 @@ bool sorter3(pair<int,pair<int,int> > p1, pair<int, pair<int,int> > p2){
 vector<int> build_sarray_smart(string txt){
 	int txtlen = txt.length();
 	int l = (int) ceil(log2(txtlen));
-	vector<pair<char,int> > v;
+	vector<pair<string,int> > v;
 	for(int i = 0; i < txtlen; i++){
-		pair<char, int> p;
-		p.first = txt[i];
+		pair<string, int> p;
+		p.first = txt.substr(i);
 		p.second = i;
 		v.push_back(p);
 	}
@@ -336,7 +339,7 @@ vector<int> build_sarray_smart(string txt){
 
 
 	int p[txtlen];
-	memset(p, -1, txtlen);
+	memset(p, -1, txtlen * sizeof(int));
 	int k = 0;
 
 	for(int i = 0; i < txtlen; i++){
@@ -371,7 +374,7 @@ vector<int> build_sarray_smart(string txt){
 		k = 0;
 
 		for(int i = 0; i < txtlen; i ++){
-			if ((i > 0) && (r[i].first != v[i - 1].first) && (r[i].second.first != r[i - 1].second.first) && (r[i].second.second != r[i - 1].second.second)){
+			if ((i > 0) && (r[i].first != r[i - 1].first) && (r[i].second.first != r[i - 1].second.first) && (r[i].second.second != r[i - 1].second.second)){
 				k += 1;
 			}
 
@@ -380,6 +383,7 @@ vector<int> build_sarray_smart(string txt){
 
 	}
 	vector<int> ret;
+
 	for(int i = 0; i < r.size(); i++){
 		ret.push_back(r[i].second.second);
 	}
@@ -387,6 +391,7 @@ vector<int> build_sarray_smart(string txt){
 }
 
 int main(){
+
 	string txt = "baobabab";
 	int textlen = txt.length();
 
@@ -409,7 +414,7 @@ int main(){
 		vector<int> v = match(txt, patterns[i], sarray, Llcp, Rlcp);
 		printf("[");
 		for(int j = 0; j < v.size(); j++){
-			printf("%d, ",v[i]);
+			printf("%d, ",v[j]);
 		}
 		printf("]\n");
 	}
