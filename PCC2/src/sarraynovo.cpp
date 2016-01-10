@@ -69,12 +69,12 @@ vector<int> index(string text) {
 	return sarray;
 }
 
-inline int lcp(string x, string y){
+inline int lcp(string & x, int ix, string & y, int iy){
 	int lx = x.length();
 	int ly = y.length();
 	int i = 0;
 
-	while ((i < lx) && (i < ly) && (x[i] == y[i])){
+	while ((i + ix < lx) && (i + iy < ly) && (x[i + ix] == y[i + iy])){
 		i += 1;
 	}
 	return i;
@@ -84,7 +84,7 @@ inline int lcp2(string & txt, int x, int y){
 	int n = txt.length();
 	int i = 0;
 
-	while ((i < n) && (txt[x + i] == txt[y + i])){
+	while (((i + x) < n) && ((i + y) < n) && (txt[x + i] == txt[y + i])){
 		i += 1;
 	}
 	return i;
@@ -94,8 +94,8 @@ int succ_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & L
 	int patlen = pat.length();
 	int txtlen = text.length();
 
-	int L = lcp(pat, text.substr(sarray[0]));
-	int R = lcp(pat, text.substr(sarray[txtlen - 1]));
+	int L = lcp(pat, 0, text, sarray[0]);
+	int R = lcp(pat, 0, text, sarray[txtlen - 1]);
 
 	if ((L == patlen) || (((sarray[0] + L) < txtlen) && (pat[L] < (text[sarray[0] + L])))){
 		return 0;
@@ -116,7 +116,7 @@ int succ_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & L
 				l = h;
 			}
 			else if (L == Llcp[h]){
-				int H = L + lcp(pat.substr(L), text.substr(sarray[h] + L));
+				int H = L + lcp(pat, L, text, sarray[h] + L);
 				if ((H == patlen) || ((H < (txtlen - sarray[h])) && (text[sarray[h] + H] > pat[H]))){
 					r = h;
 					R = H;
@@ -136,7 +136,7 @@ int succ_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & L
 				r = h;
 			}
 			else if (R == Rlcp[h]){
-				int H = R + lcp(pat.substr(R), text.substr(sarray[h] + R));
+				int H = R + lcp(pat, R, text, sarray[h] + R);
 				if ((H == patlen) || ((H < (txtlen - sarray[h])) && (text[sarray[h] + H] > pat[H]))){
 					r = h;
 					R = H;
@@ -159,8 +159,8 @@ int pred_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & L
 	int patlen = pat.length();
 	int txtlen = text.length();
 
-	int L = lcp(pat, text.substr(sarray[0]));
-	int R = lcp(pat, text.substr(sarray[txtlen - 1]));
+	int L = lcp(pat, 0, text, sarray[0]);
+	int R = lcp(pat, 0, text, sarray[txtlen - 1]);
 
 
 	if ((R == patlen) || ((R + sarray[txtlen - 1]) == txtlen) || ((text[R + sarray[txtlen - 1]]) < pat[R])){
@@ -180,7 +180,7 @@ int pred_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & L
 				l = h;
 			}
 			else if (L == Llcp[h]){
-				int H = L + lcp(pat.substr(L), text.substr(sarray[h] + L));
+				int H = L + lcp(pat, L, text, sarray[h] + L);
 				if ((H == patlen) || (txtlen == (H + sarray[h])) || (text[sarray[h] + H] < pat[H])){
 					l = h;
 					L = H;
@@ -200,7 +200,7 @@ int pred_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & L
 				r = h;
 			}
 			else if (R == Rlcp[h]){
-				int H = R + lcp(pat.substr(R), text.substr(sarray[h] + R));
+				int H = R + lcp(pat, R, text, sarray[h] + R);
 				if ((H == patlen) || (txtlen == (H + sarray[h])) || (text[sarray[h] + H] < pat[H])){
 					l = h;
 					L = H;
@@ -246,7 +246,7 @@ int main(){
 
 	ifstream in;
 	std::ostringstream contents;
-	in.open("../testes/dna.50MB");
+	in.open("bible.txt");
 	contents.str("");
 	contents << in.rdbuf();
 	in.close();
@@ -265,7 +265,8 @@ int main(){
 	printf("Compute encerrando\n");
 
 	vector<string> patterns;
-	patterns.push_back("TCAA");
+	patterns.push_back("Jesus");
+	patterns.push_back("God");
 
 
 	for (int i = 0; i < patterns.size(); i++){
