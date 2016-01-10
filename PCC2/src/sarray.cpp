@@ -10,58 +10,28 @@ using namespace std;
 
 string txt;
 
-void print_sarr(string txt, vector<int> sarray){
-	int n = txt.length();
-	printf("i\tsa[i]\ti-esimo sufixo\n");
-	for(int i = 0; i < n; i++){
-		printf("%d\t%d\t\"%s\"\n", i,sarray[i], txt.substr(sarray[i]).c_str());
-	}
-}
-
-
-inline int lcp(string x,string y){
+inline int scmp(string & x, string & y, int yi, int m){
 	int lx = x.length();
 	int ly = y.length();
 	int i = 0;
-
-	while ((i < lx) && (i < ly) && (x[i] == y[i])){
-		i += 1;
-	}
-	return i;
-}
-
-inline int lcp2(string & txt, int x, int y){
-	int n = txt.length();
-	int i = 0;
-
-	while ((i < n) && (txt[x + i] == txt[y + i])){
-		i += 1;
-	}
-	return i;
-}
-
-inline int scmp(string & x, string & y, int m){
-	int lx = x.length();
-	int ly = y.length();
-	int i = 0;
-	while((i < lx) && (i < ly) && (i < m) && (x[i] == y[i])){
+	while((i< lx) && (i + yi < ly) && (i < m) && (x[i] == y[i + yi])){
 		i++;
 	}
-	if( i == m){
+	if(i == m){
 		return 0;
 	}
 	if(i == lx){
-		if(i == ly){
+		if(i + yi == ly){
 			return 0;
 		}
 		else {
 			return -1;
 		}
 	}
-	if(i == ly){
+	if(i + yi == ly){
 		return 1;
 	}
-	if(x[i] < y[i]){
+	if(x[i] < y[i + yi]){
 		return -1;
 	}
 	else{
@@ -69,20 +39,20 @@ inline int scmp(string & x, string & y, int m){
 	}
 }
 
-inline bool gt(string x, string y, int m){
-	return scmp(x, y, m ) > 0;
+inline bool gt(string & x, string & y, int yi, int m){
+	return scmp(x, y, yi, m ) > 0;
 }
 
-inline bool geq(string x, string y, int m){
-	return scmp(x, y, m) >= 0;
+inline bool geq(string & x, string & y, int yi, int m){
+	return scmp(x, y, yi, m ) >= 0;
 }
 
-inline bool lt(string x,string  y,int m){
-	return scmp(x, y, m) < 0;
+inline bool lt(string & x, string & y, int yi, int m){
+	return scmp(x, y, yi, m ) < 0;
 }
 
-inline bool leq(string x,string y,int m){
-	return scmp(x, y, m) <= 0;
+inline bool leq(string & x, string & y, int yi, int m){
+	return scmp(x, y, yi, m ) <= 0;
 }
 
 
@@ -91,11 +61,11 @@ int succ(string & text, string & pat, vector<int> & sarray){
 	int patlen = pat.length();
 	int txtlen = text.length();
 
-	if (leq(pat, text.substr(sarray[0]), patlen)){
+	if (leq(pat, text, sarray[0], patlen)){
 		return 0;
 	}
 
-	if (gt(pat, text.substr(sarray[txtlen - 1]), patlen)){
+	if (gt(pat, text, sarray[txtlen - 1], patlen)){
 		return txtlen;
 	}
 	int l = 0;
@@ -104,7 +74,7 @@ int succ(string & text, string & pat, vector<int> & sarray){
 	while ((r - l) > 1){
 
 		int h = (l + r) / 2;
-		if (leq(pat, text.substr(sarray[h]), patlen)){
+		if (leq(pat, text, sarray[h], patlen)){
 			r = h;
 		}
 		else{
@@ -112,135 +82,6 @@ int succ(string & text, string & pat, vector<int> & sarray){
 		}
 	}
 	return r;
-}
-
-int succ_llcp(string & text,string & pat,vector<int> & sarray,vector<int> & Llcp, vector<int> & Rlcp){
-	int patlen = pat.length();
-	int txtlen = text.length();
-
-	int L = lcp(pat, text.substr(sarray[0]));
-	int R = lcp(pat, text.substr(sarray[txtlen - 1]));
-
-	if ((L == patlen) || (((sarray[0] + L) < txtlen) && (pat[L] < (text[sarray[0] + L])))){
-		return 0;
-	}
-
-	if ((((sarray[txtlen - 1] + R) == txtlen) && (R < patlen)) || ((R < patlen) && ((sarray[txtlen - 1] + R) < txtlen) && (pat[R] > (text[sarray[txtlen - 1] + R])))){
-		return txtlen;
-	}
-
-	int l = 0;
-	int r = txtlen - 1;
-
-	while ((r - l) > 1){
-		int h = (l + r) / 2;
-
-		if (L >= R){
-			if (L < Llcp[h]){
-				l = h;
-			}
-			else if (L == Llcp[h]){
-				int H = L + lcp(pat.substr(L), text.substr(sarray[h] + L));
-				if ((H == patlen) || ((H < (txtlen - sarray[h])) && (text[sarray[h] + H] > pat[H]))){
-					r = h;
-					R = H;
-				}
-				else{
-					l = h;
-					L = H;
-				}
-			}
-			else{
-				r = h;
-				R = Llcp[h];
-			}
-		}
-		else{
-			if (R < Rlcp[h]){
-				r = h;
-			}
-			else if (R == Rlcp[h]){
-				int H = R + lcp(pat.substr(R), text.substr(sarray[h] + R));
-				if ((H == patlen) || ((H < (txtlen - sarray[h])) && (text[sarray[h] + H] > pat[H]))){
-					r = h;
-					R = H;
-				}
-				else{
-					l = h;
-					L = H;
-				}
-			}
-			else{
-				l = h;
-				L = Rlcp[h];
-			}
-		}
-	}
-	return r;
-}
-
-int pred_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & Llcp, vector<int> & Rlcp){
-	int patlen = pat.length();
-	int txtlen = text.length();
-
-	int L = lcp(pat, text.substr(sarray[0]));
-	int R = lcp(pat, text.substr(sarray[txtlen - 1]));
-	
-
-	if ((R == patlen) || ((R + sarray[txtlen - 1]) == txtlen) || ((text[R + sarray[txtlen - 1]]) < pat[R])){
-		return txtlen - 1;
-	}
-
-	if ((L < patlen) && ((L + sarray[0]) < txtlen) && (text[L + sarray[0]] > pat[L])){
-		return -1;
-	}
-
-	int l = 0;
-	int r = txtlen - 1;
-	while ((r - l) > 1){
-		int h = (l + r) / 2;
-		if (L >= R){
-			if (L < Llcp[h]){
-				l = h;
-			}
-			else if (L == Llcp[h]){
-				int H = L + lcp(pat.substr(L), text.substr(sarray[h] + L));
-				if ((H == patlen) || (txtlen == (H + sarray[h])) || (text[sarray[h] + H] < pat[H])){
-					l = h;
-					L = H;
-				}
-				else{
-					r = h;
-					R = H;
-				}
-			}
-			else{
-				r = h;
-				R = Llcp[h];
-			}
-		}
-		else{
-			if (R < Rlcp[h]){
-				r = h;
-			}
-			else if (R == Rlcp[h]){
-				int H = R + lcp(pat.substr(R), text.substr(sarray[h] + R));
-				if ((H == patlen) || (txtlen == (H + sarray[h])) || (text[sarray[h] + H] < pat[H])){
-					l = h;
-					L = H;
-				}
-				else{
-					r = h;
-					R = H;
-				}
-			}
-			else{
-				l = h;
-				L = Rlcp[h];
-			}
-		}
-	}
-	return l;
 }
 
 
@@ -248,11 +89,11 @@ inline int pred(string & text, string & pat, vector<int> & sarray){
 	int patlen = pat.length();
 	int txtlen = text.length();
 
-	if (geq(pat, text.substr(sarray[txtlen - 1]), patlen)){
+	if (geq(pat, text, sarray[txtlen - 1], patlen)){
 		return txtlen - 1;
 	}
 
-	if (lt(pat, text.substr(sarray[0]), patlen)){
+	if (lt(pat, text, sarray[0], patlen)){
 		return -1;
 	}
 
@@ -262,7 +103,7 @@ inline int pred(string & text, string & pat, vector<int> & sarray){
 	while ((r - l) > 1){
 		int h = (l + r) / 2;
 
-		if (lt(pat, text.substr(sarray[h]), patlen)){
+		if (lt(pat, text, sarray[h], patlen)){
 			r = h;
 		}
 		else{
@@ -273,25 +114,9 @@ inline int pred(string & text, string & pat, vector<int> & sarray){
 }
 
 
-
-void compute_LRlcp(string & text,vector<int> & sarray, vector<int> & Llcp,vector<int> & Rlcp,int l,int r){
-	if ((r - l) > 1){
-		int h = (l + r) / 2;
-
-		Llcp[h] = lcp2(text, sarray[l], sarray[h]);
-		Rlcp[h] = lcp2(text, sarray[r], sarray[h]);
-
-		compute_LRlcp(text, sarray, Llcp, Rlcp, l, h);
-		compute_LRlcp(text, sarray, Llcp, Rlcp, h, r);
-	}
-}
-
-inline vector<int> match(string & text,string & pat, vector<int> & sarray, vector<int> & Llcp, vector<int> & Rlcp){
-	printf("trying to match against \'%s\'\n" , pat.c_str());
+inline vector<int> match(string & text,string & pat, vector<int> & sarray){
 	int r = pred(text, pat, sarray);
-	printf("predecessor (R): %d / %d (com lcp)\n" , r, pred_llcp(text, pat, sarray, Llcp, Rlcp));
 	int l = succ(text, pat, sarray);
-	printf("successor (L): %d / %d (com lcp)\n" , l, succ_llcp(text, pat, sarray, Llcp, Rlcp));
 	vector<int> v;
 	for(int i = l; i < r + 1; i++){
 		v.push_back(sarray[i]);
@@ -386,7 +211,7 @@ int main(){
 	ifstream in;
  	std::ostringstream contents;
  	txt = "ta comando make em?";
- 	in.open("README.txt");
+ 	in.open("bible.txt");
  	contents.str("");
  	contents << in.rdbuf();
  	in.close();
@@ -396,31 +221,15 @@ int main(){
 	int textlen = txt.length();
 	vector<int> sarray = build_sarray_smart(txt);
 
-	//print_sarr(txt, sarray);
-
-	vector<int> Llcp(textlen);
-	vector<int> Rlcp(textlen);
-	memset(&Llcp[0], -1, textlen*sizeof(Llcp[0]));
-	memset(&Rlcp[0], -1, textlen*sizeof(Llcp[0]));
-
-	printf("Compute iniciando\n");
-	compute_LRlcp(txt, sarray, Llcp, Rlcp, 0, textlen - 1);
-	printf("Compute encerrando\n");
 
 	vector<string> patterns;
-	patterns.push_back("make");
-	//patterns.push_back("created");
-
+	patterns.push_back("Jesus");
+	patterns.push_back("God");
 
 	
 	for(int i = 0; i < patterns.size(); i++){
-		vector<int> v = match(txt, patterns[i], sarray, Llcp, Rlcp);
+		vector<int> v = match(txt, patterns[i], sarray);
 		printf("Numbers of match %lu\n",v.size());
-		printf("[");
-		for(int j = 0; j < v.size(); j++){
-			printf("%d, ",v[j]);
-		}
-		printf("]\n");
 	}
 		
 
