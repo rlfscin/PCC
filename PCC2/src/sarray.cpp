@@ -14,11 +14,12 @@ struct x {
 	int a, b, index;
 };
 
-static int cmp(struct x one, struct x another) {
+static int cmp(const struct x & one, const struct x & another) {
 	return one.a == another.a ? (one.b < another.b ? 1 : 0) : (one.a < another.a ? 1 : 0);
 }
 
 vector<int> index(string text) {
+	txt = text;
 	int n = text.length();
 	vector<x> L(n);
 
