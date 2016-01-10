@@ -332,16 +332,16 @@ int main(int argc, char* argv[]) {
 			// done uncompressing text
 
 			printf("Decompression done!\n");
-			printf("Saving file\n");
+			// printf("Saving file\n");
 
-			string outfileName = fileName.substr(0, fileName.length()-4) + ".teste";
-			ofstream out (outfileName, ios::out | ios::binary);
-			for (int i = 0; i < pureText.length(); i++) {
-				out.write((char*) &pureText[i], sizeof(char));
-			}
-			out.close();
+			// string outfileName = fileName.substr(0, fileName.length()-4) + ".teste";
+			// ofstream out (outfileName, ios::out | ios::binary);
+			// for (int i = 0; i < pureText.length(); i++) {
+			// 	out.write((char*) &pureText[i], sizeof(char));
+			// }
+			// out.close();
 
-			printf("File saved successfully\n\n");
+			// printf("File saved successfully\n\n");
 
 			printf("Uncompressing Llcp and Rlcp\n");
 
@@ -430,16 +430,16 @@ int main(int argc, char* argv[]) {
 			// done uncompressing text
 
 			printf("Decompression done!\n");
-			printf("Saving file\n");
+			// printf("Saving file\n");
 
-			string outfileName = fileName.substr(0, fileName.length()-4) + ".teste";
-			ofstream out (outfileName, ios::out | ios::binary);
-			for (int i = 0; i < pureText.length(); i++) {
-				out.write((char*) &pureText[i], sizeof(char));
-			}
-			out.close();
+			// string outfileName = fileName.substr(0, fileName.length()-4) + ".teste";
+			// ofstream out (outfileName, ios::out | ios::binary);
+			// for (int i = 0; i < pureText.length(); i++) {
+			// 	out.write((char*) &pureText[i], sizeof(char));
+			// }
+			// out.close();
 
-			printf("File saved successfully\n\n");
+			// printf("File saved successfully\n\n");
 
 			printf("Uncompressing Llcp and Rlcp\n");
 
