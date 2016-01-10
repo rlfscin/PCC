@@ -10,227 +10,268 @@ using namespace std;
 
 string txt;
 
-inline int scmp(string & x, string & y, int yi, int m){
+struct x {
+	int a, b, index;
+};
+
+static int cmp(struct x one, struct x another) {
+	return one.a == another.a ? (one.b < another.b ? 1 : 0) : (one.a < another.a ? 1 : 0);
+}
+
+vector<int> index(string text) {
+	int n = text.length();
+	vector<x> L(n);
+
+	for (int i = 0; i < n; i++) {
+		L[i].a = text[i] - 'a';
+		L[i].b = (i + 1 < n) ? (text[i + 1] - 'a') : -1;
+		L[i].index = i;
+	}
+
+	sort(L.begin(), L.end(), cmp);
+
+	vector<int> ind(n);
+
+	int nextIdx;
+	for (int k = 4; k < 2 * n; k = k * 2) {
+		int rank = 0;
+		int previousRank = L[0].a;
+		L[0].a = rank;
+		ind[L[0].index] = 0;
+
+		for (int i = 1; i < n; i++) {
+			if (L[i].a == previousRank && L[i].b == L[i - 1].b) {
+				previousRank = L[i].a;
+				L[i].a = rank;
+			}
+			else {
+				previousRank = L[i].a;
+				L[i].a = ++rank;
+			}
+			ind[L[i].index] = i;
+		}
+
+		for (int i = 0; i < n; i++)
+		{
+			nextIdx = L[i].index + k / 2;
+			L[i].b = (nextIdx < n) ? L[ind[nextIdx]].a : -1;
+		}
+
+		sort(L.begin(), L.end(), cmp);
+	}
+
+	vector<int> sarray(n);
+	for (int i = 0; i < n; i++)
+	{
+		sarray[i] = L[i].index;
+	}
+
+	return sarray;
+}
+
+inline int lcp(string x, string y){
 	int lx = x.length();
 	int ly = y.length();
 	int i = 0;
-	while((i< lx) && (i + yi < ly) && (i < m) && (x[i] == y[i + yi])){
-		i++;
+
+	while ((i < lx) && (i < ly) && (x[i] == y[i])){
+		i += 1;
 	}
-	if(i == m){
-		return 0;
-	}
-	if(i == lx){
-		if(i + yi == ly){
-			return 0;
-		}
-		else {
-			return -1;
-		}
-	}
-	if(i + yi == ly){
-		return 1;
-	}
-	if(x[i] < y[i + yi]){
-		return -1;
-	}
-	else{
-		return 1;
-	}
+	return i;
 }
 
-inline bool gt(string & x, string & y, int yi, int m){
-	return scmp(x, y, yi, m ) > 0;
+inline int lcp2(string & txt, int x, int y){
+	int n = txt.length();
+	int i = 0;
+
+	while ((i < n) && (txt[x + i] == txt[y + i])){
+		i += 1;
+	}
+	return i;
 }
 
-inline bool geq(string & x, string & y, int yi, int m){
-	return scmp(x, y, yi, m ) >= 0;
-}
-
-inline bool lt(string & x, string & y, int yi, int m){
-	return scmp(x, y, yi, m ) < 0;
-}
-
-inline bool leq(string & x, string & y, int yi, int m){
-	return scmp(x, y, yi, m ) <= 0;
-}
-
-
-
-int succ(string & text, string & pat, vector<int> & sarray){
+int succ_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & Llcp, vector<int> & Rlcp){
 	int patlen = pat.length();
 	int txtlen = text.length();
 
-	if (leq(pat, text, sarray[0], patlen)){
+	int L = lcp(pat, text.substr(sarray[0]));
+	int R = lcp(pat, text.substr(sarray[txtlen - 1]));
+
+	if ((L == patlen) || (((sarray[0] + L) < txtlen) && (pat[L] < (text[sarray[0] + L])))){
 		return 0;
 	}
 
-	if (gt(pat, text, sarray[txtlen - 1], patlen)){
+	if ((((sarray[txtlen - 1] + R) == txtlen) && (R < patlen)) || ((R < patlen) && ((sarray[txtlen - 1] + R) < txtlen) && (pat[R] > (text[sarray[txtlen - 1] + R])))){
 		return txtlen;
 	}
+
 	int l = 0;
 	int r = txtlen - 1;
 
 	while ((r - l) > 1){
-
 		int h = (l + r) / 2;
-		if (leq(pat, text, sarray[h], patlen)){
-			r = h;
+
+		if (L >= R){
+			if (L < Llcp[h]){
+				l = h;
+			}
+			else if (L == Llcp[h]){
+				int H = L + lcp(pat.substr(L), text.substr(sarray[h] + L));
+				if ((H == patlen) || ((H < (txtlen - sarray[h])) && (text[sarray[h] + H] > pat[H]))){
+					r = h;
+					R = H;
+				}
+				else{
+					l = h;
+					L = H;
+				}
+			}
+			else{
+				r = h;
+				R = Llcp[h];
+			}
 		}
 		else{
-			l = h;
+			if (R < Rlcp[h]){
+				r = h;
+			}
+			else if (R == Rlcp[h]){
+				int H = R + lcp(pat.substr(R), text.substr(sarray[h] + R));
+				if ((H == patlen) || ((H < (txtlen - sarray[h])) && (text[sarray[h] + H] > pat[H]))){
+					r = h;
+					R = H;
+				}
+				else{
+					l = h;
+					L = H;
+				}
+			}
+			else{
+				l = h;
+				L = Rlcp[h];
+			}
 		}
 	}
 	return r;
 }
 
-
-inline int pred(string & text, string & pat, vector<int> & sarray){
+int pred_llcp(string & text, string & pat, vector<int> & sarray, vector<int> & Llcp, vector<int> & Rlcp){
 	int patlen = pat.length();
 	int txtlen = text.length();
 
-	if (geq(pat, text, sarray[txtlen - 1], patlen)){
+	int L = lcp(pat, text.substr(sarray[0]));
+	int R = lcp(pat, text.substr(sarray[txtlen - 1]));
+
+
+	if ((R == patlen) || ((R + sarray[txtlen - 1]) == txtlen) || ((text[R + sarray[txtlen - 1]]) < pat[R])){
 		return txtlen - 1;
 	}
 
-	if (lt(pat, text, sarray[0], patlen)){
+	if ((L < patlen) && ((L + sarray[0]) < txtlen) && (text[L + sarray[0]] > pat[L])){
 		return -1;
 	}
 
 	int l = 0;
 	int r = txtlen - 1;
-
 	while ((r - l) > 1){
 		int h = (l + r) / 2;
-
-		if (lt(pat, text, sarray[h], patlen)){
-			r = h;
+		if (L >= R){
+			if (L < Llcp[h]){
+				l = h;
+			}
+			else if (L == Llcp[h]){
+				int H = L + lcp(pat.substr(L), text.substr(sarray[h] + L));
+				if ((H == patlen) || (txtlen == (H + sarray[h])) || (text[sarray[h] + H] < pat[H])){
+					l = h;
+					L = H;
+				}
+				else{
+					r = h;
+					R = H;
+				}
+			}
+			else{
+				r = h;
+				R = Llcp[h];
+			}
 		}
 		else{
-			l = h;
+			if (R < Rlcp[h]){
+				r = h;
+			}
+			else if (R == Rlcp[h]){
+				int H = R + lcp(pat.substr(R), text.substr(sarray[h] + R));
+				if ((H == patlen) || (txtlen == (H + sarray[h])) || (text[sarray[h] + H] < pat[H])){
+					l = h;
+					L = H;
+				}
+				else{
+					r = h;
+					R = H;
+				}
+			}
+			else{
+				l = h;
+				L = Rlcp[h];
+			}
 		}
 	}
 	return l;
 }
 
+void compute_LRlcp(string & text, vector<int> & sarray, vector<int> & Llcp, vector<int> & Rlcp, int l, int r){
+	if ((r - l) > 1){
+		int h = (l + r) / 2;
 
-inline vector<int> match(string & text,string & pat, vector<int> & sarray){
-	int r = pred(text, pat, sarray);
-	int l = succ(text, pat, sarray);
+		Llcp[h] = lcp2(text, sarray[l], sarray[h]);
+		Rlcp[h] = lcp2(text, sarray[r], sarray[h]);
+
+		compute_LRlcp(text, sarray, Llcp, Rlcp, l, h);
+		compute_LRlcp(text, sarray, Llcp, Rlcp, h, r);
+	}
+}
+
+inline vector<int> match(string & text, string & pat, vector<int> & sarray, vector<int> & Llcp, vector<int> & Rlcp){
+	printf("trying to match against \'%s\'\n", pat.c_str());
+	int r = pred_llcp(text, pat, sarray, Llcp, Rlcp);
+	int l = succ_llcp(text, pat, sarray, Llcp, Rlcp);
 	vector<int> v;
-	for(int i = l; i < r + 1; i++){
+	for (int i = l; i < r + 1; i++){
 		v.push_back(sarray[i]);
 	}
 	return v;
 }
 
-bool sorter1(const int & p1, const int & p2){
-	return txt[p1] < txt[p2];
-}
-
-bool sorter2(const pair<int,pair<int,int> > & p1,const pair<int, pair<int,int> > & p2){
-	if (p1.first == p2.first){
-		if(p1.second.first == p2.second.first){
-			return p1.second.second < p2.second.second;
-		}
-		return p1.second.first < p2.second.first;
-	}
-	return p1.first < p2.first;
-}
-
-vector<int> build_sarray_smart(string & txt){
-	int txtlen = txt.length();
-	int l = (int) ceil(log2(txtlen));
-	vector<int> v;
-	for(int i = 0; i < txtlen; i++){
-		v.push_back(i);
-	}
-	
-
-	sort(v.begin(), v.end(), sorter1);
-
-
-	vector<int> p(txtlen);
-
-	memset(&p[0], -1, txtlen * sizeof(int));
-	int k = 0;
-
-	for(int i = 0; i < txtlen; i++){
-		if((i > 0) && (txt[v[i]] != txt[v[i - 1]])){
-			k += 1;
-		}
-
-		p[v[i]] = k;
-	}
-
-
-	vector<pair<int,pair<int,int> > > r(txtlen);
-
-	for(k = 0; k < l; k++){
-		int j = (int) pow(2, k);
-		for(int i = 0; i < txtlen; i++){
-			pair<int,pair<int,int> > t;
-			if ((i + j) < txtlen){
-				t.first = p[i];
-				t.second.first = p[i + j];
-				t.second.second = i;
-			}
-			else{
-				t.first = p[i];
-				t.second.first = -1;
-				t.second.second = i;
-			}
-			r[i] = t;
-		}
-
-
-		sort(r.begin(), r.end(), sorter2);
-
-		int q = 0;
-
-		for(int i = 0; i < txtlen; i ++){
-			if ((i > 0) && ((r[i].first != r[i - 1].first) || (r[i].second.first != r[i - 1].second.first))){
-				q += 1;
-			}
-
-			p[r[i].second.second] = q;
-		}
-
-
-	}
-	vector<int> ret;
-
-	for(int i = 0; i < r.size(); i++){
-		ret.push_back(r[i].second.second);
-	}
-	return ret;
-}
-
 int main(){
 
 	ifstream in;
- 	std::ostringstream contents;
- 	txt = "ta comando make em?";
- 	in.open("bible.txt");
- 	contents.str("");
- 	contents << in.rdbuf();
- 	in.close();
- 	txt = contents.str();
-
+	std::ostringstream contents;
+	in.open("../testes/dna.50MB");
+	contents.str("");
+	contents << in.rdbuf();
+	in.close();
+	txt = contents.str();
 
 	int textlen = txt.length();
-	vector<int> sarray = build_sarray_smart(txt);
+	vector<int> sarray = index(txt);
 
+	vector<int> Llcp(textlen);
+	vector<int> Rlcp(textlen);
+	memset(&Llcp[0], -1, textlen*sizeof(Llcp[0]));
+	memset(&Rlcp[0], -1, textlen*sizeof(Llcp[0]));
+
+	printf("Compute iniciando\n");
+	compute_LRlcp(txt, sarray, Llcp, Rlcp, 0, textlen - 1);
+	printf("Compute encerrando\n");
 
 	vector<string> patterns;
-	patterns.push_back("Jesus");
-	patterns.push_back("God");
+	patterns.push_back("TCAA");
 
-	
-	for(int i = 0; i < patterns.size(); i++){
-		vector<int> v = match(txt, patterns[i], sarray);
-		printf("Numbers of match %lu\n",v.size());
+
+	for (int i = 0; i < patterns.size(); i++){
+		vector<int> v = match(txt, patterns[i], sarray, Llcp, Rlcp);
+		printf("Numbers of match %lu\n", v.size());
 	}
-		
+
 
 }
