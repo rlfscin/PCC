@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <iostream>
@@ -7,6 +8,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace std::chrono;
 
 class sarray {
 public:
@@ -242,16 +244,28 @@ public:
 	}
 };
 
+const int MICROSECONDS = 1000000;
+
 // int main(){
+// 	high_resolution_clock::time_point t1;
+// 	high_resolution_clock::time_point t2;
+// 	float duration;
+// 	float seconds;
+// 	float x;
+
 // 	sarray sa;
 
+// 	t1 = high_resolution_clock::now();
 // 	ifstream in;
 // 	std::ostringstream contents;
-// 	in.open("../testes/dna.50MB");
+// 	in.open("../testes/english.100MB");
 // 	contents.str("");
 // 	contents << in.rdbuf();
 // 	in.close();
 // 	string txt = contents.str();
+// 	t2 = high_resolution_clock::now();
+// 	duration = duration_cast<microseconds>( t2 - t1 ).count();
+// 	x = duration/MICROSECONDS;
 
 // 	int textlen = txt.length();
 // 	vector<int> idx = sa.index(txt);
@@ -260,17 +274,25 @@ public:
 // 	vector<int> Rlcp(textlen);
 // 	memset(&Llcp[0], -1, textlen*sizeof(Llcp[0]));
 // 	memset(&Rlcp[0], -1, textlen*sizeof(Llcp[0]));
-
-// 	printf("Compute iniciando\n");
+// 	cout << "computando" << endl;
 // 	sa.compute_LRlcp(txt, idx, Llcp, Rlcp, 0, textlen - 1);
-// 	printf("Compute encerrando\n");
 
 // 	vector<string> patterns;
-// 	patterns.push_back("TCAA");
-
+// 	patterns.push_back("I am");
+// 	patterns.push_back("will not be"); //556
+// 	patterns.push_back("with"); //177644
+// 	patterns.push_back("Yes");
+// 	patterns.push_back("at the point"); //75
 
 // 	for (int i = 0; i < patterns.size(); i++){
+// 		t1 = high_resolution_clock::now();
 // 		vector<int> v = sa.match(txt, patterns[i], idx, Llcp, Rlcp);
-// 		printf("Numbers of match %lu\n", v.size());
+// 		printf("Numbers of matches %lu\n", v.size());
+// 		t2 = high_resolution_clock::now();
+
+// 		duration = duration_cast<microseconds>( t2 - t1 ).count();
+// 		seconds = duration/MICROSECONDS + x;
+
+// 		printf("%f\n", seconds);
 // 	}
 // }

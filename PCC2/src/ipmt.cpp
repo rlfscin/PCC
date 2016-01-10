@@ -86,33 +86,68 @@ int main(int argc, char* argv[]) {
 		printf("Index done!\n");
 
 		// converting index to string
-		string suffixStr = "";
-		for (int i = 0; i < index.size(); i++) {
-			suffixStr += to_string(index[i]);
-			suffixStr += " ";
-		}
+		// string suffixStr = "";
+		// for (int i = 0; i < index.size(); i++) {
+		// 	suffixStr += to_string(index[i]);
+		// 	suffixStr += " ";
+		// }
 		// done converting
+
+		printf("Calculating Llcp and Rlcp\n");
+
+		int textlen = contentsStr.length();
+		vector<int> Llcp(textlen);
+		vector<int> Rlcp(textlen);
+		memset(&Llcp[0], -1, textlen*sizeof(Llcp[0]));
+		memset(&Rlcp[0], -1, textlen*sizeof(Llcp[0]));
+
+		sa.compute_LRlcp(contentsStr, index, Llcp, Rlcp, 0, textlen - 1);
+
+		printf("Calculation done!\n");
 
 		string comp_lzw = "lzw";
 		if(compression == NULL || compression == comp_lzw) {
-			printf("Compressing file and its indexes with LZW\n");
+			printf("Compressing file with LZW\n");
 
 			LZW lzw;
-
-			// compressing indexes
-			vector<short> compressed = lzw.encode(suffixStr);
-
 			string outfileName = fileName + ".idx";
 			ofstream outfile (outfileName, ios::out | ios::binary);
 
-			int sizeOfSuffixStr = compressed.size();
+			// writing indexes
+			int sizeOfIndex = index.size();
+			outfile.write((const char*) &sizeOfIndex, sizeof(int));
+			for (int i = 0; i < index.size(); ++i) {
+				outfile.write((const char*) &index[i], sizeof(int));
+			}
+			// done writing indexes
 
-			outfile.write((const char*) &sizeOfSuffixStr, sizeof(int));
+			// compressing llcp and rlcp
+			string llcpStr = "";
+			for (int i = 0; i < Llcp.size(); i++) {
+				llcpStr += to_string(Llcp[i]);
+				llcpStr += " ";
+			}
 
+			vector<short> compressed = lzw.encode(llcpStr);
+			int llcpCompressed = compressed.size();
+			outfile.write((const char*) &llcpCompressed, sizeof(int));
 			for (int i = 0; i < compressed.size(); ++i) {
 				outfile.write((const char*) &compressed[i], sizeof(short));
 			}
-			// done compressing indexes
+
+			string rlcpStr = "";
+			for (int i = 0; i < Rlcp.size(); i++) {
+				rlcpStr += to_string(Rlcp[i]);
+				rlcpStr += " ";
+			}
+
+			compressed = lzw.encode(rlcpStr);
+			int rlcpCompressed = compressed.size();
+			outfile.write((const char*) &rlcpCompressed, sizeof(int));
+			for (int i = 0; i < compressed.size(); ++i) {
+				outfile.write((const char*) &compressed[i], sizeof(short));
+			}
+			// done compressing llcp and rlcp
 
 			// compressing text
 			compressed = lzw.encode(contentsStr);
@@ -170,14 +205,32 @@ int main(int argc, char* argv[]) {
 		printf("Uncompressing file %s\n", fileName.c_str());
 
 		// reading indexes
-		int sizeOfSuffixStr;
-		file.read((char *) &sizeOfSuffixStr, sizeof(int));
+		int sizeOfIndex;
+		file.read((char *) &sizeOfIndex, sizeof(int));
 
-		vector<short> indexCompressed(sizeOfSuffixStr);
-		for(int i = 0; i < sizeOfSuffixStr; i++) {
-			file.read((char* ) &indexCompressed[i], sizeof(short));
+		vector<int> index(sizeOfIndex);
+		for(int i = 0; i < sizeOfIndex; i++) {
+			file.read((char* ) &index[i], sizeof(int));
 		}
 		// done reading indexes
+
+		// reading llcp and rlcp
+		int sizeOfCompressedLlcp;
+		file.read((char *) &sizeOfCompressedLlcp, sizeof(int));
+
+		vector<short> compressedLlcp(sizeOfCompressedLlcp);
+		for(int i = 0; i < sizeOfCompressedLlcp; i++) {
+			file.read((char* ) &compressedLlcp[i], sizeof(short));
+		}
+
+		int sizeOfCompressedRlcp;
+		file.read((char *) &sizeOfCompressedRlcp, sizeof(int));
+
+		vector<short> compressedRlcp(sizeOfCompressedRlcp);
+		for(int i = 0; i < sizeOfCompressedRlcp; i++) {
+			file.read((char* ) &compressedRlcp[i], sizeof(short));
+		}
+		// done reading llcp and rlcp
 
 		// reading text
 		int sizeOfCompressedText;
@@ -209,32 +262,32 @@ int main(int argc, char* argv[]) {
 
 		printf("File saved successfully\n\n");
 
-		printf("Uncompressing indexes\n");
-		vector<int> index;
-		string indexStr = lzw.decode(indexCompressed);
+		printf("Uncompressing Llcp and Rlcp\n");
+
+		vector<int> Llcp;
+		string llcpStr = lzw.decode(compressedLlcp);
 		int aux = 0;
-		for (int i = 1; i < indexStr.length(); i++) {
-			if(indexStr[i] == ' ') {
-				index.push_back(stoi(indexStr.substr(aux, i-aux)));
+		for (int i = 1; i < llcpStr.length(); i++) {
+			if(llcpStr[i] == ' ') {
+				Llcp.push_back(stoi(llcpStr.substr(aux, i-aux)));
+				aux = i+1;
+				i++;
+			}
+		}
+
+		vector<int> Rlcp;
+		string rlcpStr = lzw.decode(compressedRlcp);
+		aux = 0;
+		for (int i = 1; i < rlcpStr.length(); i++) {
+			if(rlcpStr[i] == ' ') {
+				Rlcp.push_back(stoi(rlcpStr.substr(aux, i-aux)));
 				aux = i+1;
 				i++;
 			}
 		}
 		printf("Decompression done!\n");
- 
-		printf("Calculating Llcp and Rlcp\n");
 
 		sarray sa;
-
-		int textlen = pureText.length();
-		vector<int> Llcp(textlen);
-		vector<int> Rlcp(textlen);
-		memset(&Llcp[0], -1, textlen*sizeof(Llcp[0]));
-		memset(&Rlcp[0], -1, textlen*sizeof(Llcp[0]));
-
-		sa.compute_LRlcp(pureText, index, Llcp, Rlcp, 0, textlen - 1);
-
-		printf("Calculation done!\n");
 
 		for (int i = 0; i < theseAreThePatterns.size(); i++) {
 			vector<int> v = sa.match(pureText, theseAreThePatterns[i], index, Llcp, Rlcp);
