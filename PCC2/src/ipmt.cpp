@@ -10,6 +10,7 @@
 #include <sstream>
 #include "sarray.cpp"
 #include "LZW.cpp"
+#include "lz78.cpp"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ int main(int argc, char* argv[]) {
 
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "", long_options, &option_index);
+		c = getopt_long (argc, argv, "p:ch", long_options, &option_index);
 
 		if(c == -1)
 			break;
@@ -49,7 +50,8 @@ int main(int argc, char* argv[]) {
 				break;
 
 			case 'h':
-				cout << "ipmt [index] [--compression=lz78] [--compression=lzw] [search] [-p --pattern patternfile] [pattern] file" << endl;
+				cout << "bin/ipmt [index] file [--compression=lz78] [--compression=lzw]" << endl;
+				cout << "bin/ipmt [search] file [-p --pattern patternfile] [pattern] [-c]" << endl;
 				return 0;
 
 			default:
@@ -106,12 +108,18 @@ int main(int argc, char* argv[]) {
 		printf("Calculation done!\n");
 
 		string comp_lzw = "lzw";
+		string comp_lz78 = "lz78";
 		if(compression == NULL || compression == comp_lzw) {
 			printf("Compressing file with LZW\n");
 
 			LZW lzw;
 			string outfileName = fileName + ".idx";
 			ofstream outfile (outfileName, ios::out | ios::binary);
+
+			// writing lzw flag
+			char c = 'w';
+			outfile.write((const char*) &c, sizeof(char));
+			// done writing
 
 			// writing indexes
 			int sizeOfIndex = index.size();
@@ -164,8 +172,73 @@ int main(int argc, char* argv[]) {
 
 			printf("File compressed successfully\n\n");
 
-		} else {
+		} else if(compression == comp_lz78) {
 			printf("Compressing file %s with LZ78\n", fileName.c_str());
+
+			LZ78 lz78;
+
+			string outfileName = fileName + ".idx";
+			ofstream outfile (outfileName, ios::out | ios::binary);
+
+			// writing lz78 flag
+			char c = '7';
+			outfile.write((const char*) &c, sizeof(char));
+			// done writing
+
+			// writing indexes
+			int sizeOfIndex = index.size();
+			outfile.write((const char*) &sizeOfIndex, sizeof(int));
+			for (int i = 0; i < index.size(); ++i) {
+				outfile.write((const char*) &index[i], sizeof(int));
+			}
+			// done writing indexes
+
+			// compressing llcp and rlcp
+			string llcpStr = "";
+			for (int i = 0; i < Llcp.size(); i++) {
+				llcpStr += to_string(Llcp[i]);
+				llcpStr += " ";
+			}
+
+			map<int, pair<int, char> > compressed = lz78.encode(llcpStr);
+			map<int, pair<int, char> >::iterator it;
+			int qtd = compressed.size();
+			outfile.write((const char*) &qtd, sizeof(int));
+			for (it = compressed.begin(); it != compressed.end(); ++it)
+			{
+				outfile.write((const char*)&it->second.first, sizeof(int));
+				outfile.write((const char*)&it->second.second, sizeof(char));
+			}
+
+			string rlcpStr = "";
+			for (int i = 0; i < Rlcp.size(); i++) {
+				rlcpStr += to_string(Rlcp[i]);
+				rlcpStr += " ";
+			}
+
+			compressed = lz78.encode(rlcpStr);
+			qtd = compressed.size();
+			outfile.write((const char*) &qtd, sizeof(int));
+			for (it = compressed.begin(); it != compressed.end(); ++it)
+			{
+				outfile.write((const char*)&it->second.first, sizeof(int));
+				outfile.write((const char*)&it->second.second, sizeof(char));
+			}
+			// done compressing llcp and rlcp
+
+			// compressing text
+			compressed = lz78.encode(contentsStr);
+
+			qtd = compressed.size();
+			outfile.write((const char*) &qtd, sizeof(int));
+			for (it = compressed.begin(); it != compressed.end(); ++it)
+			{
+				outfile.write((const char*)&it->second.first, sizeof(int));
+				outfile.write((const char*)&it->second.second, sizeof(char));
+			}
+			// done compressing text
+
+			printf("File compressed successfully\n\n");
 		}
 
 	} else if(strcmp(argv[optind], "search") == 0){
@@ -202,7 +275,12 @@ int main(int argc, char* argv[]) {
 
 		ifstream file(fileName, ios::in | ios::binary);
 
-		printf("Uncompressing file %s\n", fileName.c_str());
+		char c;
+		file.read((char *) &c, sizeof(char));
+
+		string pureText;
+		vector<int> Llcp;
+		vector<int> Rlcp;
 
 		// reading indexes
 		int sizeOfIndex;
@@ -214,84 +292,226 @@ int main(int argc, char* argv[]) {
 		}
 		// done reading indexes
 
-		// reading llcp and rlcp
-		int sizeOfCompressedLlcp;
-		file.read((char *) &sizeOfCompressedLlcp, sizeof(int));
+		if(c == 'w') {
+			printf("Uncompressing file %s\n", fileName.c_str());
 
-		vector<short> compressedLlcp(sizeOfCompressedLlcp);
-		for(int i = 0; i < sizeOfCompressedLlcp; i++) {
-			file.read((char* ) &compressedLlcp[i], sizeof(short));
-		}
+			// reading llcp and rlcp
+			int sizeOfCompressedLlcp;
+			file.read((char *) &sizeOfCompressedLlcp, sizeof(int));
 
-		int sizeOfCompressedRlcp;
-		file.read((char *) &sizeOfCompressedRlcp, sizeof(int));
-
-		vector<short> compressedRlcp(sizeOfCompressedRlcp);
-		for(int i = 0; i < sizeOfCompressedRlcp; i++) {
-			file.read((char* ) &compressedRlcp[i], sizeof(short));
-		}
-		// done reading llcp and rlcp
-
-		// reading text
-		int sizeOfCompressedText;
-		file.read((char *) &sizeOfCompressedText, sizeof(int));
-
-		vector<short> textCompressed(sizeOfCompressedText);
-		for(int i = 0; i < sizeOfCompressedText; i++) {
-			file.read((char* ) &textCompressed[i], sizeof(short));
-		}
-		// done reading text
-
-		file.close();
-
-		LZW lzw;
-
-		// uncompressing text
-		string pureText = lzw.decode(textCompressed);
-		// done uncompressing text
-
-		printf("Decompression done!\n");
-		printf("Saving file\n");
-
-		string outfileName = fileName.substr(0, fileName.length()-4) + ".teste";
-		ofstream out (outfileName, ios::out | ios::binary);
-		for (int i = 0; i < pureText.length(); i++) {
-			out.write((char*) &pureText[i], sizeof(char));
-		}
-		out.close();
-
-		printf("File saved successfully\n\n");
-
-		printf("Uncompressing Llcp and Rlcp\n");
-
-		vector<int> Llcp;
-		string llcpStr = lzw.decode(compressedLlcp);
-		int aux = 0;
-		for (int i = 1; i < llcpStr.length(); i++) {
-			if(llcpStr[i] == ' ') {
-				Llcp.push_back(stoi(llcpStr.substr(aux, i-aux)));
-				aux = i+1;
-				i++;
+			vector<short> compressedLlcp(sizeOfCompressedLlcp);
+			for(int i = 0; i < sizeOfCompressedLlcp; i++) {
+				file.read((char* ) &compressedLlcp[i], sizeof(short));
 			}
-		}
 
-		vector<int> Rlcp;
-		string rlcpStr = lzw.decode(compressedRlcp);
-		aux = 0;
-		for (int i = 1; i < rlcpStr.length(); i++) {
-			if(rlcpStr[i] == ' ') {
-				Rlcp.push_back(stoi(rlcpStr.substr(aux, i-aux)));
-				aux = i+1;
-				i++;
+			int sizeOfCompressedRlcp;
+			file.read((char *) &sizeOfCompressedRlcp, sizeof(int));
+
+			vector<short> compressedRlcp(sizeOfCompressedRlcp);
+			for(int i = 0; i < sizeOfCompressedRlcp; i++) {
+				file.read((char* ) &compressedRlcp[i], sizeof(short));
 			}
+			// done reading llcp and rlcp
+
+			// reading text
+			int sizeOfCompressedText;
+			file.read((char *) &sizeOfCompressedText, sizeof(int));
+
+			vector<short> textCompressed(sizeOfCompressedText);
+			for(int i = 0; i < sizeOfCompressedText; i++) {
+				file.read((char* ) &textCompressed[i], sizeof(short));
+			}
+			// done reading text
+
+			file.close();
+
+			LZW lzw;
+
+			// uncompressing text
+			pureText = lzw.decode(textCompressed);
+			// done uncompressing text
+
+			printf("Decompression done!\n");
+			printf("Saving file\n");
+
+			string outfileName = fileName.substr(0, fileName.length()-4) + ".teste";
+			ofstream out (outfileName, ios::out | ios::binary);
+			for (int i = 0; i < pureText.length(); i++) {
+				out.write((char*) &pureText[i], sizeof(char));
+			}
+			out.close();
+
+			printf("File saved successfully\n\n");
+
+			printf("Uncompressing Llcp and Rlcp\n");
+
+			string llcpStr = lzw.decode(compressedLlcp);
+			int aux = 0;
+			for (int i = 1; i < llcpStr.length(); i++) {
+				if(llcpStr[i] == ' ') {
+					Llcp.push_back(stoi(llcpStr.substr(aux, i-aux)));
+					aux = i+1;
+					i++;
+				}
+			}
+
+			string rlcpStr = lzw.decode(compressedRlcp);
+			aux = 0;
+			for (int i = 1; i < rlcpStr.length(); i++) {
+				if(rlcpStr[i] == ' ') {
+					Rlcp.push_back(stoi(rlcpStr.substr(aux, i-aux)));
+					aux = i+1;
+					i++;
+				}
+			}
+			printf("Decompression done!\n\n");
+		} else if(c == '7') {
+			printf("Uncompressing file %s\n", fileName.c_str());
+
+			// reading llcp and rlcp
+			int qtd;
+			file.read((char *) &qtd, sizeof(int));
+
+			map<int, pair<int, char> > compressedLlcp;
+
+			int inteiro = 0;;
+			char c = ' ';
+			int aux = 0;
+
+			for (int i = 0; i < qtd; i++) {
+				file.read((char *) &inteiro, sizeof(int));
+				file.read((char *) &c, sizeof(char));
+
+				compressedLlcp.insert(pair<int, pair<int, char> >(aux, pair<int, char>(inteiro, c)));
+				aux++;
+			}
+
+			file.read((char *) &qtd, sizeof(int));
+
+			map<int, pair<int, char> > compressedRlcp;
+
+			inteiro = 0;;
+			c = ' ';
+			aux = 0;
+
+			for (int i = 0; i < qtd; i++) {
+				file.read((char *) &inteiro, sizeof(int));
+				file.read((char *) &c, sizeof(char));
+
+				compressedRlcp.insert(pair<int, pair<int, char> >(aux, pair<int, char>(inteiro, c)));
+				aux++;
+			}
+			// done reading llcp and rlcp
+
+			// reading text
+			file.read((char *) &qtd, sizeof(int));
+
+			map<int, pair<int, char> > textCompressed;
+
+			inteiro = 0;;
+			c = ' ';
+			aux = 0;
+
+			for (int i = 0; i < qtd; i++) {
+				file.read((char *) &inteiro, sizeof(int));
+				file.read((char *) &c, sizeof(char));
+
+				textCompressed.insert(pair<int, pair<int, char> >(aux, pair<int, char>(inteiro, c)));
+				aux++;
+			}
+			// done reading text
+
+			file.close();
+
+			LZ78 lz78;
+
+			// uncompressing text
+			pureText = lz78.decode(textCompressed);
+			// done uncompressing text
+
+			printf("Decompression done!\n");
+			printf("Saving file\n");
+
+			string outfileName = fileName.substr(0, fileName.length()-4) + ".teste";
+			ofstream out (outfileName, ios::out | ios::binary);
+			for (int i = 0; i < pureText.length(); i++) {
+				out.write((char*) &pureText[i], sizeof(char));
+			}
+			out.close();
+
+			printf("File saved successfully\n\n");
+
+			printf("Uncompressing Llcp and Rlcp\n");
+
+			string llcpStr = lz78.decode(compressedLlcp);
+			aux = 0;
+			for (int i = 1; i < llcpStr.length(); i++) {
+				if(llcpStr[i] == ' ') {
+					Llcp.push_back(stoi(llcpStr.substr(aux, i-aux)));
+					aux = i+1;
+					i++;
+				}
+			}
+
+			string rlcpStr = lz78.decode(compressedRlcp);
+			aux = 0;
+			for (int i = 1; i < rlcpStr.length(); i++) {
+				if(rlcpStr[i] == ' ') {
+					Rlcp.push_back(stoi(rlcpStr.substr(aux, i-aux)));
+					aux = i+1;
+					i++;
+				}
+			}
+			printf("Decompression done!\n\n");
 		}
-		printf("Decompression done!\n");
 
 		sarray sa;
 
-		for (int i = 0; i < theseAreThePatterns.size(); i++) {
-			vector<int> v = sa.match(pureText, theseAreThePatterns[i], index, Llcp, Rlcp);
-			printf("Numbers of matches %lu\n", v.size());
+		if(count) {
+			for (int i = 0; i < theseAreThePatterns.size(); i++) {
+
+				// gambiarra, sorry :(
+				if(c == '7') {
+					pureText = pureText.substr(0, pureText.length()-1);
+				}
+				vector<int> v = sa.match(pureText, theseAreThePatterns[i], index, Llcp, Rlcp);
+				printf("Numbers of matches %lu\n", v.size());
+			}
+		} else {
+			// gambiarra, sorry :(
+			if(c == '7') {
+				pureText = pureText.substr(0, pureText.length()-1);
+			}
+
+			for (int i = 0; i < theseAreThePatterns.size(); i++) {
+				vector<int> v = sa.match(pureText, theseAreThePatterns[i], index, Llcp, Rlcp);
+				
+				printf("Printing matches for %s\n", theseAreThePatterns[i].c_str());
+
+				int b;
+				int e;
+				for(int j = 0; j < v.size(); j++) {
+					for(int k = v[j]; k > 0 && v[j]-k < 50; k--) {
+						if(pureText[k] == '\n') {
+							b = k+1;
+							k = -1;
+						} else {
+							b = k;
+						}
+					}
+
+					for(int k = v[j]; k < pureText.length() & k-v[j] < 50; k++) {
+						if(pureText[k] == '\n') {
+							e = k;
+							k = pureText.length();
+						} else {
+							e = k;
+						}
+					}
+
+					printf("%s\n", pureText.substr(b, e-b).c_str());
+				}
+			}
 		}
 
 		printf("\n");
