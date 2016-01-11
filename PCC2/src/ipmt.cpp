@@ -8,6 +8,7 @@
 #include <math.h>
 #include <algorithm>
 #include <sstream>
+#include <string.h>
 #include "sarray.cpp"
 #include "LZW.cpp"
 #include "lz78.cpp"
@@ -475,7 +476,7 @@ int main(int argc, char* argv[]) {
 					pureText = pureText.substr(0, pureText.length()-1);
 				}
 				vector<int> v = sa.match(pureText, theseAreThePatterns[i], index, Llcp, Rlcp);
-				printf("Numbers of matches %lu\n", v.size());
+				printf("Numbers of matches for %s: %lu\n", theseAreThePatterns[i].c_str(), v.size());
 			}
 		} else {
 			// gambiarra, sorry :(
