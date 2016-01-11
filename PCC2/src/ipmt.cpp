@@ -469,12 +469,12 @@ int main(int argc, char* argv[]) {
 		sarray sa;
 
 		if(count) {
+			// gambiarra, sorry :(
+			if(c == '7') {
+				pureText = pureText.substr(0, pureText.length()-1);
+			}
+			
 			for (int i = 0; i < theseAreThePatterns.size(); i++) {
-
-				// gambiarra, sorry :(
-				if(c == '7') {
-					pureText = pureText.substr(0, pureText.length()-1);
-				}
 				vector<int> v = sa.match(pureText, theseAreThePatterns[i], index, Llcp, Rlcp);
 				printf("Numbers of matches for %s: %lu\n", theseAreThePatterns[i].c_str(), v.size());
 			}
